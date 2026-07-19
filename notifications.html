@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - AI Study Assistant</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #ff7675;
+        }
+        * {margin:0;padding:0;box-sizing:border-box;font-family: 'Inter', system-ui, -apple-system, sans-serif;}
+        body {background:#E2E8F0;display:flex;justify-content:center;min-height:100vh;}
+        .mobile-container {width:100%;max-width:414px;background:var(--bg);box-shadow:0 10px 30px rgba(0,0,0,0.1);overflow-y:auto;display:flex;flex-direction:column;padding-bottom:80px;}
+        .header {background:linear-gradient(135deg, var(--primary), var(--secondary));color:white;padding:30px 24px;border-bottom-left-radius:30px;border-bottom-right-radius:30px;}
+        .header h2 {font-size:20px;}
+        .section {padding:20px 24px;}
+        .section-title {font-size:18px;font-weight:700;margin-bottom:12px;color:var(--text);}
+        .notification-card {background:var(--surface);border-radius:15px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);display:flex;flex-direction:column;}
+        .notification-card span {font-size:14px;color:var(--text-light);margin-top:6px;}
+        .bottom-nav {position:fixed;bottom:0;left:0;right:0;background:var(--surface);display:flex;justify-content:space-around;padding:12px 0;border-top:1px solid var(--border);}
+        .nav-item {display:flex;flex-direction:column;align-items:center;color:var(--text-light);font-size:11px;cursor:pointer;}
+        .nav-item.active {color:var(--primary);}
+        .nav-icon {font-size:20px;}
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="header">
+            <h2>🔔 Notifications</h2>
+            <p>Stay on top of your study journey</p>
+        </div>
+        <div class="section">
+            <div class="section-title">Today</div>
+            <div class="notification-card">
+                <strong>Study Reminder</strong>
+                <span>📚 30‑minute session begins at 4:00 PM</span>
+            </div>
+            <div class="notification-card">
+                <strong>Revision Alert</strong>
+                <span>🔄 Review Flashcards for Physics (due today)</span>
+            </div>
+            <div class="notification-card">
+                <strong>Quiz Reminder</strong>
+                <span>📝 Quiz on Calculus starts in 2 hours</span>
+            </div>
+            <div class="notification-card">
+                <strong>Goal Completed</strong>
+                <span>🏆 You reached your weekly study goal! 🎉</span>
+            </div>
+            <div class="notification-card">
+                <strong>Exam Countdown</strong>
+                <span>⏳ 5 days left until Physics Midterm</span>
+            </div>
+        </div>
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="window.location.href='dashboard.html'">
+                <div class="nav-icon">🏠</div><span>Home</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='notifications.html'" class="active">
+                <div class="nav-icon">🔔</div><span>Alerts</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='profile.html'">
+                <div class="nav-icon">👤</div><span>Profile</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='settings.html'">
+                <div class="nav-icon">⚙️</div><span>Settings</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

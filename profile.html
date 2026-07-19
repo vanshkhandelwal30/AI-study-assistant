@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --success: #00b894;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',system-ui,sans-serif; }
+        body { background:#E2E8F0; display:flex; justify-content:center; min-height:100vh; }
+        .mobile-container {
+            width:100%; max-width:414px; background:var(--bg);
+            box-shadow:0 10px 30px rgba(0,0,0,0.1); overflow-y:auto; display:flex; flex-direction:column;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background:linear-gradient(135deg, var(--primary), var(--secondary));
+            color:white; padding:40px 24px 30px; text-align:center;
+            border-bottom-left-radius:30px; border-bottom-right-radius:30px; position:relative;
+        }
+        .back-btn {
+            position:absolute; top:20px; left:20px; background:none; border:none;
+            font-size:20px; cursor:pointer; color:white;
+        }
+        .avatar {
+            width:90px; height:90px; border-radius:50%; background:rgba(255,255,255,0.3);
+            margin:0 auto 15px; display:flex; align-items:center; justify-content:center;
+            font-size:40px; border:3px solid white;
+        }
+        .profile-header h2 { font-size:22px; font-weight:700; margin-bottom:4px; }
+        .profile-header p { font-size:14px; opacity:0.9; }
+
+        /* Content */
+        .content { padding:20px 24px; }
+
+        .section-title {
+            font-size:16px; font-weight:700; margin:20px 0 12px; display:flex; align-items:center; gap:8px;
+        }
+        .section-title:first-child { margin-top:0; }
+
+        /* Editable Card */
+        .edit-card {
+            background:var(--surface); border-radius:15px; padding:18px;
+            border:1px solid var(--border); margin-bottom:12px;
+        }
+        .edit-card label {
+            font-size:12px; font-weight:600; color:var(--text-light); display:block; margin-bottom:6px;
+        }
+        .edit-card input {
+            width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px;
+            font-size:15px; outline:none; background:var(--bg); color:var(--text);
+        }
+        .edit-card input:focus { border-color:var(--primary); }
+
+        /* Badges */
+        .badges-row { display:flex; flex-wrap:wrap; gap:8px; }
+        .badge {
+            background:rgba(108,92,231,0.1); color:var(--primary); padding:6px 14px;
+            border-radius:20px; font-size:12px; font-weight:600;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:15px;
+        }
+        .stat-box {
+            background:var(--surface); border-radius:12px; padding:15px; text-align:center;
+            border:1px solid var(--border);
+        }
+        .stat-box h3 { font-size:20px; color:var(--primary); margin-bottom:3px; }
+        .stat-box p { font-size:11px; color:var(--text-light); font-weight:600; }
+
+        /* Action Buttons */
+        .action-btn {
+            width:100%; padding:14px; border-radius:12px; font-size:14px; font-weight:600;
+            cursor:pointer; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px;
+        }
+        .btn-primary {
+            background:linear-gradient(135deg, var(--primary), var(--secondary));
+            color:white; border:none; box-shadow:0 4px 15px rgba(108,92,231,0.3);
+        }
+        .btn-outline {
+            background:none; border:1px solid var(--border); color:var(--text);
+        }
+        .save-msg {
+            text-align:center; font-size:13px; color:var(--success); font-weight:600;
+            margin-bottom:10px; display:none;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+            <div class="avatar">👤</div>
+            <h2 id="display-name">Alex Johnson</h2>
+            <p id="display-course">Computer Science</p>
+        </div>
+
+        <div class="content">
+
+            <!-- Edit Profile -->
+            <div class="section-title">✏️ Edit Profile</div>
+            <div class="edit-card">
+                <label>Full Name</label>
+                <input type="text" id="name-input" value="Alex Johnson" oninput="updateProfile()">
+            </div>
+            <div class="edit-card">
+                <label>Course / Branch</label>
+                <input type="text" id="course-input" value="Computer Science" oninput="updateProfile()">
+            </div>
+            <div class="edit-card">
+                <label>Email</label>
+                <input type="email" id="email-input" value="alex@example.com">
+            </div>
+
+            <div id="save-msg" class="save-msg">✅ Profile updated!</div>
+            <button class="action-btn btn-primary" onclick="saveProfile()">Save Changes</button>
+
+            <!-- Stats -->
+            <div class="section-title">📊 Quick Stats</div>
+            <div class="stats-row">
+                <div class="stat-box"><h3>34</h3><p>Quizzes</p></div>
+                <div class="stat-box"><h3>5</h3><p>Day Streak</p></div>
+                <div class="stat-box"><h3>12</h3><p>Notes</p></div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="section-title">🏆 Achievements</div>
+            <div class="badges-row" style="margin-bottom:20px;">
+                <div class="badge">🔥 5-Day Streak</div>
+                <div class="badge">📝 10 Quizzes</div>
+                <div class="badge">🗂️ First Flashcard Set</div>
+                <div class="badge">📚 100 Hours</div>
+            </div>
+
+            <!-- Learning Goals -->
+            <div class="section-title">🎯 Learning Goals</div>
+            <div class="edit-card">
+                <p style="font-size:14px; line-height:1.8;">
+                    ✅ Finish Data Structures<br>
+                    ✅ Build a mobile app prototype<br>
+                    ⬜ Master Machine Learning basics
+                </p>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <button class="action-btn btn-outline" onclick="window.location.href='progress.html'" style="margin-top:15px;">📊 View Full Progress</button>
+            <button class="action-btn btn-outline" onclick="window.location.href='settings.html'">⚙️ Settings</button>
+
+        </div>
+    </div>
+
+    <script>
+        // Live update name & course in the header as user types
+        function updateProfile() {
+            document.getElementById('display-name').innerText = document.getElementById('name-input').value || 'Your Name';
+            document.getElementById('display-course').innerText = document.getElementById('course-input').value || 'Your Course';
+        }
+
+        // Save button feedback
+        function saveProfile() {
+            var msg = document.getElementById('save-msg');
+            msg.style.display = 'block';
+            setTimeout(function() { msg.style.display = 'none'; }, 2000);
+        }
+    </script>
+</body>
+</html>

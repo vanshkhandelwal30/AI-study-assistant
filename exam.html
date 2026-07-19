@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Prep - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #8e82ef;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --success: #00b894;
+            --danger: #ff7675;
+            --warning: #fdcb6e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg);
+            min-height: 100vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 20px;
+            padding-bottom: 40px;
+        }
+
+        /* Countdown Card */
+        .countdown-card {
+            background: linear-gradient(135deg, var(--danger), #ff9a9e);
+            color: white;
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(255, 118, 117, 0.3);
+        }
+
+        .countdown-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .timer-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-val {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .time-lbl {
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* AI Prediction Banner */
+        .ai-predict {
+            background: rgba(108, 92, 231, 0.05);
+            border: 1px dashed var(--primary);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .predict-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .topic-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .topic-chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Action Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .action-card {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .action-card:active { transform: scale(0.95); }
+
+        .action-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .action-card h3 { font-size: 13px; margin-bottom: 4px; }
+        .action-card p { font-size: 11px; color: var(--text-light); }
+
+        /* List Items */
+        .list-container {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .list-item:last-child { border-bottom: none; }
+
+        .item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-icon {
+            font-size: 20px;
+        }
+
+        .item-info h4 { font-size: 13px; margin-bottom: 2px; }
+        .item-info p { font-size: 11px; color: var(--text-light); }
+
+        .item-btn {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+            <h1>Exam Preparation</h1>
+        </div>
+
+        <div class="content">
+
+            <!-- Countdown Timer -->
+            <div class="countdown-card">
+                <div class="countdown-title">Physics Final Exam</div>
+                <div class="timer-display">
+                    <div class="time-box">
+                        <div class="time-val">14</div>
+                        <div class="time-lbl">Days</div>
+                    </div>
+                    <div class="time-val" style="opacity: 0.5;">:</div>
+                    <div class="time-box">
+                        <div class="time-val">08</div>
+                        <div class="time-lbl">Hrs</div>
+                    </div>
+                    <div class="time-val" style="opacity: 0.5;">:</div>
+                    <div class="time-box">
+                        <div class="time-val">42</div>
+                        <div class="time-lbl">Mins</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Predictions -->
+            <div class="ai-predict">
+                <div class="predict-header">
+                    <span>🤖</span> AI Predicted Topics
+                </div>
+                <p style="font-size: 12px; color: var(--text-light); margin-bottom: 12px;">Based on past 5 years of exam patterns, focus heavily on:</p>
+                <div class="topic-chips">
+                    <div class="topic-chip">🔥 Electromagnetism (High Prob.)</div>
+                    <div class="topic-chip">⭐ Optics</div>
+                    <div class="topic-chip">⭐ Thermodynamics</div>
+                </div>
+            </div>
+
+            <!-- Mock Tests & QBank Grid -->
+            <div class="action-grid">
+                <div class="action-card" onclick="window.location.href='quiz.html'">
+                    <div class="action-icon">📝</div>
+                    <h3>Mock Tests</h3>
+                    <p>Full length practice</p>
+                </div>
+                <div class="action-card" onclick="alert('Opening Important Questions Bank...')">
+                    <div class="action-icon">🎯</div>
+                    <h3>Important Qs</h3>
+                    <p>Curated by AI</p>
+                </div>
+            </div>
+
+            <!-- Past Papers -->
+            <div class="section-title">📄 Previous Exam Papers</div>
+            <div class="list-container">
+                
+                <div class="list-item">
+                    <div class="item-left">
+                        <div class="item-icon">📑</div>
+                        <div class="item-info">
+                            <h4>2023 Final Paper</h4>
+                            <p>Includes Answer Key</p>
+                        </div>
+                    </div>
+                    <button class="item-btn" onclick="alert('Downloading PDF...')">Download</button>
+                </div>
+
+                <div class="list-item">
+                    <div class="item-left">
+                        <div class="item-icon">📑</div>
+                        <div class="item-info">
+                            <h4>2022 Final Paper</h4>
+                            <p>Includes Answer Key</p>
+                        </div>
+                    </div>
+                    <button class="item-btn" onclick="alert('Downloading PDF...')">Download</button>
+                </div>
+
+                <div class="list-item">
+                    <div class="item-left">
+                        <div class="item-icon">📑</div>
+                        <div class="item-info">
+                            <h4>2021 Final Paper</h4>
+                            <p>Includes Answer Key</p>
+                        </div>
+                    </div>
+                    <button class="item-btn" onclick="alert('Downloading PDF...')">Download</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

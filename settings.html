@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',system-ui,sans-serif; }
+        body {
+            background:var(--bg); display:flex; justify-content:center; min-height:100vh;
+            color:var(--text); transition:all 0.3s;
+        }
+        .mobile-container {
+            width:100%; max-width:414px; background:var(--bg);
+            box-shadow:0 10px 30px rgba(0,0,0,0.1); overflow-y:auto; display:flex; flex-direction:column;
+            transition:all 0.3s;
+        }
+        .header {
+            background:var(--surface); padding:20px; display:flex; align-items:center; gap:15px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.05); position:sticky; top:0; z-index:10;
+            transition:all 0.3s;
+        }
+        .back-btn { background:none; border:none; font-size:20px; cursor:pointer; color:var(--text); }
+        .header h1 { font-size:18px; font-weight:700; }
+        .content { padding:20px; }
+
+        .section-label {
+            font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px;
+            color:var(--text-light); margin:20px 0 10px; padding-left:5px;
+        }
+        .section-label:first-child { margin-top:0; }
+
+        .settings-card {
+            background:var(--surface); border-radius:15px; overflow:hidden;
+            border:1px solid var(--border); margin-bottom:5px; transition:all 0.3s;
+        }
+
+        .setting-item {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:15px 18px; border-bottom:1px solid var(--border); transition:all 0.3s;
+        }
+        .setting-item:last-child { border-bottom:none; }
+
+        .setting-left { display:flex; align-items:center; gap:12px; }
+        .setting-icon { font-size:20px; }
+        .setting-info h4 { font-size:14px; font-weight:600; }
+        .setting-info p { font-size:11px; color:var(--text-light); transition:color 0.3s; }
+
+        /* Toggle Switch */
+        .toggle { position:relative; width:44px; height:24px; cursor:pointer; flex-shrink:0; }
+        .toggle input { opacity:0; width:0; height:0; }
+        .slider {
+            position:absolute; top:0; left:0; right:0; bottom:0;
+            background:var(--border); border-radius:24px; transition:0.3s;
+        }
+        .slider::before {
+            content:''; position:absolute; height:18px; width:18px; left:3px; bottom:3px;
+            background:white; border-radius:50%; transition:0.3s;
+        }
+        .toggle input:checked + .slider { background:var(--primary); }
+        .toggle input:checked + .slider::before { transform:translateX(20px); }
+
+        /* Dropdown */
+        .setting-select {
+            padding:6px 10px; border:1px solid var(--border); border-radius:8px;
+            font-size:13px; outline:none; background:var(--surface); color:var(--text); transition:all 0.3s;
+        }
+
+        .danger-btn {
+            width:100%; padding:14px; background:none; border:1px solid #ff7675;
+            color:#ff7675; border-radius:12px; font-size:14px; font-weight:600;
+            cursor:pointer; margin-top:25px; text-align:center; transition:all 0.3s;
+        }
+        .danger-btn:active { background:#ff7675; color:white; }
+
+        /* Toast notification */
+        .toast {
+            position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
+            background:var(--primary); color:white; padding:12px 24px; border-radius:25px;
+            font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.2);
+            opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:100;
+        }
+        .toast.show { opacity:1; }
+
+        /* ===== DARK MODE ===== */
+        body.dark { background:#1a1a2e; color:#e0e0e0; }
+        body.dark .mobile-container { background:#1a1a2e; }
+        body.dark .header { background:#16213e; box-shadow:0 2px 10px rgba(0,0,0,0.3); }
+        body.dark .back-btn { color:#e0e0e0; }
+        body.dark .settings-card { background:#16213e; border-color:#2a2a4a; }
+        body.dark .setting-item { border-color:#2a2a4a; }
+        body.dark .setting-info p { color:#888; }
+        body.dark .setting-select { background:#1a1a2e; color:#e0e0e0; border-color:#2a2a4a; }
+        body.dark .section-label { color:#888; }
+        body.dark .slider { background:#2a2a4a; }
+        body.dark .danger-btn { border-color:#ff7675; color:#ff7675; }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='profile.html'">←</button>
+            <h1>Settings</h1>
+        </div>
+
+        <div class="content">
+
+            <!-- Appearance -->
+            <div class="section-label">Appearance</div>
+            <div class="settings-card">
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">🌙</span>
+                        <div class="setting-info">
+                            <h4>Dark Mode</h4>
+                            <p id="dark-status">Currently: Light</p>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">🎨</span>
+                        <div class="setting-info">
+                            <h4>Theme Color</h4>
+                            <p id="theme-status">Active: Purple</p>
+                        </div>
+                    </div>
+                    <select class="setting-select" id="themeSelect" onchange="changeTheme()">
+                        <option value="#6C5CE7">Purple</option>
+                        <option value="#0984e3">Blue</option>
+                        <option value="#00b894">Green</option>
+                        <option value="#e17055">Orange</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Language -->
+            <div class="section-label">Language</div>
+            <div class="settings-card">
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">🌐</span>
+                        <div class="setting-info">
+                            <h4>App Language</h4>
+                            <p id="lang-status">Selected: English</p>
+                        </div>
+                    </div>
+                    <select class="setting-select" id="langSelect" onchange="changeLang()">
+                        <option>English</option>
+                        <option>Hindi</option>
+                        <option>Spanish</option>
+                        <option>French</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="section-label">Notifications</div>
+            <div class="settings-card">
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">🔔</span>
+                        <div class="setting-info">
+                            <h4>Study Reminders</h4>
+                            <p id="study-status">Enabled</p>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" checked onchange="toggleNotif(this,'study-status','Study Reminders')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">📝</span>
+                        <div class="setting-info">
+                            <h4>Quiz Alerts</h4>
+                            <p id="quiz-status">Enabled</p>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" checked onchange="toggleNotif(this,'quiz-status','Quiz Alerts')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">📧</span>
+                        <div class="setting-info">
+                            <h4>Email Updates</h4>
+                            <p id="email-status">Disabled</p>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" onchange="toggleNotif(this,'email-status','Email Updates')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Accessibility -->
+            <div class="section-label">Accessibility</div>
+            <div class="settings-card">
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">🔤</span>
+                        <div class="setting-info">
+                            <h4>Font Size</h4>
+                            <p id="font-status">Current: Medium</p>
+                        </div>
+                    </div>
+                    <select class="setting-select" id="fontSelect" onchange="changeFont()">
+                        <option value="14">Small</option>
+                        <option value="16" selected>Medium</option>
+                        <option value="18">Large</option>
+                        <option value="20">Extra Large</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">🔊</span>
+                        <div class="setting-info">
+                            <h4>Screen Reader</h4>
+                            <p id="reader-status">Disabled</p>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" onchange="toggleNotif(this,'reader-status','Screen Reader')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Privacy -->
+            <div class="section-label">Privacy</div>
+            <div class="settings-card">
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">🔒</span>
+                        <div class="setting-info">
+                            <h4>App Lock</h4>
+                            <p id="lock-status">Disabled</p>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" onchange="toggleNotif(this,'lock-status','App Lock')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <span class="setting-icon">📊</span>
+                        <div class="setting-info">
+                            <h4>Share Analytics</h4>
+                            <p id="analytics-status">Enabled</p>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" checked onchange="toggleNotif(this,'analytics-status','Analytics')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="danger-btn" onclick="window.location.href='auth.html'">Log Out</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">Setting saved!</div>
+
+    <script>
+        // Show toast notification
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(function(){ t.classList.remove('show'); }, 1500);
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            var on = document.getElementById('darkToggle').checked;
+            document.body.classList.toggle('dark', on);
+            document.getElementById('dark-status').innerText = 'Currently: ' + (on ? 'Dark' : 'Light');
+            showToast(on ? '🌙 Dark Mode Enabled' : '☀️ Light Mode Enabled');
+            localStorage.setItem('darkMode', on);
+        }
+
+        // Theme Color Change
+        function changeTheme() {
+            var sel = document.getElementById('themeSelect');
+            var color = sel.value;
+            var name = sel.options[sel.selectedIndex].text;
+            document.documentElement.style.setProperty('--primary', color);
+            document.getElementById('theme-status').innerText = 'Active: ' + name;
+            showToast('🎨 Theme: ' + name);
+            localStorage.setItem('themeColor', color);
+            localStorage.setItem('themeName', name);
+        }
+
+        // Language Change
+        function changeLang() {
+            var sel = document.getElementById('langSelect');
+            var lang = sel.value;
+            document.getElementById('lang-status').innerText = 'Selected: ' + lang;
+            showToast('🌐 Language: ' + lang);
+            localStorage.setItem('language', lang);
+        }
+
+        // Font Size Change
+        function changeFont() {
+            var sel = document.getElementById('fontSelect');
+            var size = sel.value;
+            var name = sel.options[sel.selectedIndex].text;
+            document.body.style.fontSize = size + 'px';
+            document.getElementById('font-status').innerText = 'Current: ' + name;
+            showToast('🔤 Font Size: ' + name);
+            localStorage.setItem('fontSize', size);
+            localStorage.setItem('fontName', name);
+        }
+
+        // Toggle any notification/privacy setting
+        function toggleNotif(el, statusId, label) {
+            var on = el.checked;
+            document.getElementById(statusId).innerText = on ? 'Enabled' : 'Disabled';
+            showToast((on ? '✅ ' : '❌ ') + label + (on ? ' Enabled' : ' Disabled'));
+        }
+
+        // Load saved settings on page open
+        window.onload = function() {
+            // Dark mode
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.getElementById('darkToggle').checked = true;
+                document.body.classList.add('dark');
+                document.getElementById('dark-status').innerText = 'Currently: Dark';
+            }
+            // Theme
+            var savedColor = localStorage.getItem('themeColor');
+            if (savedColor) {
+                document.documentElement.style.setProperty('--primary', savedColor);
+                document.getElementById('themeSelect').value = savedColor;
+                document.getElementById('theme-status').innerText = 'Active: ' + (localStorage.getItem('themeName') || 'Purple');
+            }
+            // Language
+            var savedLang = localStorage.getItem('language');
+            if (savedLang) {
+                document.getElementById('langSelect').value = savedLang;
+                document.getElementById('lang-status').innerText = 'Selected: ' + savedLang;
+            }
+            // Font Size
+            var savedFont = localStorage.getItem('fontSize');
+            if (savedFont) {
+                document.body.style.fontSize = savedFont + 'px';
+                document.getElementById('fontSelect').value = savedFont;
+                document.getElementById('font-status').innerText = 'Current: ' + (localStorage.getItem('fontName') || 'Medium');
+            }
+        };
+    </script>
+</body>
+</html>

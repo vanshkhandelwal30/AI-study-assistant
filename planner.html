@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #8e82ef;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #ff7675;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg);
+            min-height: 100vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            z-index: 10;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Views */
+        .view-section {
+            padding: 20px;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Input Form */
+        .input-group {
+            margin-bottom: 20px;
+            background: var(--surface);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .input-group input[type="date"], 
+        .input-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            background: var(--bg);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Hours Slider */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider-container input[type="range"] {
+            flex-grow: 1;
+            accent-color: var(--primary);
+        }
+
+        .hours-display {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 16px;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        /* Outputs Section */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 25px 0 15px 0;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title span {
+            font-size: 20px;
+        }
+
+        /* Weekly Goals */
+        .goal-card {
+            background: var(--surface);
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .goal-card.warning { border-left-color: var(--warning); }
+
+        .goal-content h4 { font-size: 14px; margin-bottom: 4px; }
+        .goal-content p { font-size: 12px; color: var(--text-light); }
+
+        /* Timeline / Daily Schedule */
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--surface);
+        }
+
+        .timeline-item.break::before {
+            background: var(--warning);
+        }
+
+        .timeline-item.revision::before {
+            background: var(--success);
+        }
+
+        .time-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(108, 92, 231, 0.1);
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .timeline-item.break .time-badge {
+            color: #d35400;
+            background: rgba(253, 203, 110, 0.2);
+        }
+
+        .timeline-item.revision .time-badge {
+            color: var(--success);
+            background: rgba(0, 184, 148, 0.1);
+        }
+
+        .timeline-content {
+            background: var(--surface);
+            padding: 12px 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+        }
+
+        .timeline-content h4 { font-size: 14px; margin-bottom: 3px; }
+        .timeline-content p { font-size: 12px; color: var(--text-light); }
+
+        /* Floating action */
+        .replan-btn {
+            background: var(--surface);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 12px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+            <h1>AI Study Planner</h1>
+        </div>
+
+        <!-- INPUT VIEW -->
+        <div class="view-section active" id="inputView">
+            <p style="color: var(--text-light); font-size: 14px; margin-bottom: 25px; text-align: center;">
+                Tell the AI about your upcoming exams to generate a personalized, optimized study schedule.
+            </p>
+
+            <div class="input-group">
+                <label>Target Exam Date</label>
+                <input type="date">
+            </div>
+
+            <div class="input-group">
+                <label>Subjects / Topics to Cover</label>
+                <input type="text" placeholder="e.g., Physics, Calculus, Chemistry" value="Physics, Calculus">
+            </div>
+
+            <div class="input-group">
+                <label>Available Study Hours (Daily)</label>
+                <div class="slider-container">
+                    <input type="range" min="1" max="10" value="4" oninput="document.getElementById('hrsVal').innerText = this.value + 'h'">
+                    <div class="hours-display" id="hrsVal">4h</div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="generatePlan()">Generate Smart Plan ⚡</button>
+        </div>
+
+        <!-- OUTPUT VIEW -->
+        <div class="view-section" id="outputView">
+            
+            <div style="background: rgba(0, 184, 148, 0.1); color: var(--success); padding: 15px; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 20px;">
+                🎉 Your personalized 30-day plan is ready!
+            </div>
+
+            <!-- Weekly Goals -->
+            <div class="section-title"><span>🎯</span> Weekly Goals</div>
+            <div class="goal-card">
+                <div class="goal-content">
+                    <h4>Finish Physics Kinematics</h4>
+                    <p>Complete chapters 1-3 and practice problems.</p>
+                </div>
+            </div>
+            <div class="goal-card warning">
+                <div class="goal-content">
+                    <h4>Calculus Fundamentals</h4>
+                    <p>Master limits and basic derivatives.</p>
+                </div>
+            </div>
+
+            <!-- Daily Schedule -->
+            <div class="section-title"><span>📅</span> Today's Schedule</div>
+            <div class="timeline">
+                
+                <div class="timeline-item">
+                    <div class="time-badge">09:00 AM - 10:30 AM</div>
+                    <div class="timeline-content">
+                        <h4>Physics: Projectile Motion</h4>
+                        <p>Focus on theory and formula derivation.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item break">
+                    <div class="time-badge">10:30 AM - 10:45 AM</div>
+                    <div class="timeline-content" style="background: #fffdf5; border-color: var(--warning);">
+                        <h4>☕ Brain Rest</h4>
+                        <p>Step away from the screen. Hydrate or stretch!</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="time-badge">10:45 AM - 12:15 PM</div>
+                    <div class="timeline-content">
+                        <h4>Calculus: Limits</h4>
+                        <p>Solve 20 practice questions.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Revision Plan -->
+            <div class="section-title"><span>🔄</span> Revision Strategy</div>
+            <div style="background: var(--surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border); font-size: 13px; line-height: 1.5;">
+                <strong>Spaced Repetition:</strong><br>
+                Topics learned today will be scheduled for quick 15-min reviews on:<br>
+                • <strong>Tomorrow</strong> (Day 2)<br>
+                • <strong>Sunday</strong> (End of Week)<br>
+                • <strong>Next Month</strong> (Pre-exam prep)
+            </div>
+
+            <button class="replan-btn" onclick="resetPlanner()">Adjust Plan</button>
+
+        </div>
+
+    </div>
+
+    <script>
+        function generatePlan() {
+            // Simple UI toggle to show loading state then result
+            const btn = document.querySelector('#inputView .btn');
+            btn.innerHTML = 'Analyzing... ⚙️';
+            
+            setTimeout(() => {
+                document.getElementById('inputView').classList.remove('active');
+                document.getElementById('outputView').classList.add('active');
+                btn.innerHTML = 'Generate Smart Plan ⚡'; // reset
+            }, 800);
+        }
+
+        function resetPlanner() {
+            document.getElementById('outputView').classList.remove('active');
+            document.getElementById('inputView').classList.add('active');
+        }
+    </script>
+</body>
+</html>

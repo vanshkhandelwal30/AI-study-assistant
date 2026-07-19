@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revision Center - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #ff7675;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg);
+            min-height: 100vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Content area */
+        .content {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Bookmarked Topics */
+        .bookmark-list {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
+        }
+
+        .topic-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .topic-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topic-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(253, 203, 110, 0.15);
+            color: #d35400;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        .topic-details h4 {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .topic-details p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .bookmark-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--warning);
+            cursor: pointer;
+        }
+
+        /* Grid Cards */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .grid-card {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .grid-card:active {
+            transform: scale(0.95);
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: inline-block;
+            padding: 12px;
+            border-radius: 15px;
+        }
+
+        .grid-card.summaries .card-icon { background: rgba(108, 92, 231, 0.1); color: var(--primary); }
+        .grid-card.flashcards .card-icon { background: rgba(0, 184, 148, 0.1); color: var(--success); }
+        .grid-card.quizzes .card-icon { background: rgba(255, 118, 117, 0.1); color: var(--danger); }
+        .grid-card.formulas .card-icon { background: rgba(9, 132, 227, 0.1); color: #0984e3; }
+
+        .grid-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .grid-card p {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        /* Recommendation Banner */
+        .reco-banner {
+            background: rgba(108, 92, 231, 0.05);
+            border: 1px dashed var(--primary);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .reco-text h4 {
+            font-size: 13px;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        
+        .reco-text p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .reco-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+            <h1>Revision Center</h1>
+        </div>
+
+        <div class="content">
+
+            <!-- Bookmarks -->
+            <div class="section-title">⭐ Bookmarked Topics</div>
+            <div class="bookmark-list">
+                
+                <div class="topic-item">
+                    <div class="topic-info">
+                        <div class="topic-icon">⚛️</div>
+                        <div class="topic-details">
+                            <h4>Kinematics Formulas</h4>
+                            <p>Physics • Added 2d ago</p>
+                        </div>
+                    </div>
+                    <button class="bookmark-btn">★</button>
+                </div>
+
+                <div class="topic-item">
+                    <div class="topic-info">
+                        <div class="topic-icon">🧬</div>
+                        <div class="topic-details">
+                            <h4>Cellular Respiration</h4>
+                            <p>Biology • Added 5d ago</p>
+                        </div>
+                    </div>
+                    <button class="bookmark-btn">★</button>
+                </div>
+
+            </div>
+
+            <!-- Quick Access Grid -->
+            <div class="section-title">📂 Study Materials</div>
+            <div class="grid-container">
+                
+                <div class="grid-card summaries" onclick="alert('Opening saved AI summaries...')">
+                    <div class="card-icon">📝</div>
+                    <h3>Summaries</h3>
+                    <p>12 Saved Notes</p>
+                </div>
+
+                <div class="grid-card flashcards" onclick="window.location.href='flashcards.html'">
+                    <div class="card-icon">🗂️</div>
+                    <h3>Flashcards</h3>
+                    <p>3 Decks to Review</p>
+                </div>
+
+                <div class="grid-card quizzes" onclick="window.location.href='quiz.html'">
+                    <div class="card-icon">❓</div>
+                    <h3>Retry Quizzes</h3>
+                    <p>Improve past scores</p>
+                </div>
+
+                <div class="grid-card formulas" onclick="alert('Opening Formula Cheat Sheets...')">
+                    <div class="card-icon">∑</div>
+                    <h3>Formulas</h3>
+                    <p>Quick reference sheets</p>
+                </div>
+
+            </div>
+
+            <!-- AI Recommendation -->
+            <div class="reco-banner">
+                <div style="font-size: 24px;">🤖</div>
+                <div class="reco-text">
+                    <h4>Smart Review Suggested</h4>
+                    <p>You struggled with "Cellular Respiration" in your last quiz.</p>
+                </div>
+                <button class="reco-btn" onclick="window.location.href='quiz.html'">Review</button>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

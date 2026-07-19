@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor Chat</title>
+    <style>
+        :root {--primary: #6C5CE7; --secondary: #A29BFE; --bg: #F0F2F5; --surface: #FFF; --text: #2D3436; --text-light: #636E72; --border: #DFE6E9; --error: #D63031; --success: #00b894;}
+        * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif;}
+        body {background: #E2E8F0; display: flex; justify-content: center; color: var(--text); min-height: 100vh;}
+        .mobile-container {width: 100%; max-width: 414px; background: var(--bg); height: 100vh; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden;}
+        .chat-header {background: var(--surface); padding: 15px 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10;}
+        .back-btn {background: 0; border: 0; font-size: 20px; cursor: pointer; color: var(--text);}
+        .ai-avatar {width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 20px; position: relative;}
+        .online-dot {position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background: var(--success); border: 2px solid var(--surface); border-radius: 50%;}
+        .header-info h2 {font-size: 16px; margin-bottom: 2px;}
+        .header-info p {font-size: 12px; color: var(--success); font-weight: 600;}
+        .chat-area {flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;}
+        .message {max-width: 85%; display: flex; flex-direction: column; animation: slideIn 0.3s ease-out;}
+        @keyframes slideIn {from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);}}
+        .message.user {align-self: flex-end;}
+        .message.ai {align-self: flex-start;}
+        .bubble {padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.05); word-wrap: break-word;}
+        .message.user .bubble {background: var(--primary); color: #fff; border-bottom-right-radius: 4px;}
+        .message.ai .bubble {background: var(--surface); color: var(--text); border-bottom-left-radius: 4px; border: 1px solid var(--border);}
+        .message.ai .bubble code {background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px;}
+        .typing-indicator {display: flex; gap: 4px; align-items: center; padding: 12px 16px;}
+        .typing-dot {width: 8px; height: 8px; background: var(--text-light); border-radius: 50%; animation: typing 1.4s infinite;}
+        .typing-dot:nth-child(2) {animation-delay: 0.2s;}
+        .typing-dot:nth-child(3) {animation-delay: 0.4s;}
+        @keyframes typing {0%, 60%, 100% {opacity: 0.5; transform: translateY(0);} 30% {opacity: 1; transform: translateY(-10px);}}
+        .msg-actions {display: flex; gap: 10px; margin-top: 5px; padding-left: 5px;}
+        .msg-action-btn {background: 0; border: 0; color: var(--text-light); font-size: 12px; cursor: pointer; display: flex; gap: 4px; transition: color 0.2s;}
+        .msg-action-btn:hover {color: var(--primary);}
+        .quick-prompts {display: flex; overflow-x: auto; gap: 10px; padding: 10px 20px; background: var(--bg); scrollbar-width: none;}
+        .quick-prompts::-webkit-scrollbar {display: none;}
+        .prompt-chip {white-space: nowrap; background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; color: var(--primary); cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s;}
+        .prompt-chip:hover {background: var(--primary); color: #fff;}
+        .input-area {background: var(--surface); padding: 15px 20px; display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border);}
+        .icon-btn {background: 0; border: 0; font-size: 20px; color: var(--text-light); cursor: pointer; display: flex; justify-content: center; align-items: center; transition: color 0.2s;}
+        .icon-btn:hover {color: var(--primary);}
+        .icon-btn.recording {color: var(--error); animation: pulse 1s infinite;}
+        @keyframes pulse {0%, 100% {opacity: 1;} 50% {opacity: 0.5;}}
+        .chat-input-wrapper {flex-grow: 1; background: var(--bg); border-radius: 20px; padding: 10px 15px; display: flex; align-items: center;}
+        .chat-input {width: 100%; border: 0; background: 0; font-size: 14px; outline: 0; color: var(--text);}
+        .send-btn {background: var(--primary); color: #fff; border: 0; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4); transition: all 0.2s;}
+        .send-btn:hover:not(:disabled) {background: #5f4fd1;}
+        .send-btn:disabled {opacity: 0.5; cursor: not-allowed;}
+        #fileInput {display: none;}
+        .modal {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;}
+        .modal.active {display: flex;}
+        .modal-content {background: var(--surface); padding: 20px; border-radius: 10px; max-width: 90%; text-align: center;}
+        .upload-options {display: flex; gap: 10px; justify-content: center; margin-top: 15px;}
+        .upload-btn {padding: 10px 20px; border: 0; border-radius: 5px; cursor: pointer; font-weight: 600;}
+        .upload-btn.image {background: var(--primary); color: #fff;}
+        .upload-btn.code {background: var(--secondary); color: #fff;}
+        .upload-btn.cancel {background: var(--border); color: var(--text);}
+        .notification {position: fixed; bottom: 20px; right: 20px; background: var(--surface); padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 999; animation: slideUp 0.3s ease-out;}
+        @keyframes slideUp {from {transform: translateY(100px); opacity: 0;} to {transform: translateY(0); opacity: 1;}}
+        .notification.error {border-left: 4px solid var(--error);}
+        .notification.success {border-left: 4px solid var(--success);}
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+            <div class="ai-avatar">
+                🤖
+                <div class="online-dot"></div>
+            </div>
+            <div class="header-info">
+                <h2>AI Tutor</h2>
+                <p>Online</p>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area" id="chatArea">
+            <div class="message ai">
+                <div class="bubble">
+                    Hi! I'm your AI Tutor. I'm ready to help you learn. What would you like to study today?
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Prompts -->
+        <div class="quick-prompts" id="quickPrompts">
+            <div class="prompt-chip" onclick="sendQuickPrompt('✨ Explain Concept: Can you explain this concept clearly?')">✨ Explain Concept</div>
+            <div class="prompt-chip" onclick="sendQuickPrompt('🧮 Step-by-Step Solution: Show me step by step how to solve this')">🧮 Step-by-Step Solution</div>
+            <div class="prompt-chip" onclick="sendQuickPrompt('❓ Solve Doubt: I have a doubt, can you help?')">❓ Solve Doubt</div>
+            <div class="prompt-chip" onclick="sendQuickPrompt('📝 Give Me Examples: Show me some examples')">📝 Give Me Examples</div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+            <button class="icon-btn" id="uploadBtn" title="Upload Image or Code" onclick="openUploadModal()">📎</button>
+            
+            <div class="chat-input-wrapper">
+                <input type="text" class="chat-input" id="messageInput" placeholder="Message AI Tutor..." onkeypress="handleKeyPress(event)">
+            </div>
+            
+            <button class="icon-btn" id="voiceBtn" title="Voice Input" onclick="toggleVoiceInput()">🎤</button>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <h3>Upload Content</h3>
+            <p>Choose what you want to upload</p>
+            <div class="upload-options">
+                <button class="upload-btn image" onclick="triggerFileUpload('image')">📷 Image</button>
+                <button class="upload-btn code" onclick="triggerFileUpload('code')">💻 Code</button>
+                <button class="upload-btn cancel" onclick="closeUploadModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="fileInput" onchange="handleFileUpload(event)">
+
+    <script>
+        // ============ CONFIG ============
+        // IMPORTANT: Set your API key here
+        const API_KEY = 'your-api-key-here'; // Replace with actual API key
+        const USE_DEMO_MODE = true; // Set to false when you have a real API
+        
+        // ============ STATE ============
+        let isRecording = false;
+        let mediaRecorder;
+        let audioChunks = [];
+        let uploadType = '';
+        let messageHistory = [];
+
+        // ============ DOM ELEMENTS ============
+        const chatArea = document.getElementById('chatArea');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadModal = document.getElementById('uploadModal');
+        const fileInput = document.getElementById('fileInput');
+        const quickPrompts = document.getElementById('quickPrompts');
+
+        // ============ UTILITY FUNCTIONS ============
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function addMessage(text, isUser = false, isCode = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            
+            if (isCode) {
+                bubble.innerHTML = `<pre><code>${escapeHtml(text)}</code></pre>`;
+            } else {
+                bubble.innerHTML = formatMessageText(text);
+            }
+            
+            messageDiv.appendChild(bubble);
+            
+            if (!isUser) {
+                const actions = document.createElement('div');
+                actions.className = 'msg-actions';
+                actions.innerHTML = `
+                    <button class="msg-action-btn" onclick="copyToClipboard('${escapeHtml(text)}')">📋 Copy</button>
+                    <button class="msg-action-btn" onclick="shareMessage('${escapeHtml(text)}')">📤 Share</button>
+                `;
+                messageDiv.appendChild(actions);
+            }
+            
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            return messageDiv;
+        }
+
+        function addLoadingIndicator() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai';
+            messageDiv.id = 'loading-indicator';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.innerHTML = `
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            
+            messageDiv.appendChild(bubble);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            return messageDiv;
+        }
+
+        function removeLoadingIndicator() {
+            const indicator = document.getElementById('loading-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        const formatMessageText=t=>t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/`(.*?)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+        const escapeHtml=t=>{const m={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};return t.replace(/[&<>"']/g,c=>m[c]);};
+        const copyToClipboard=t=>navigator.clipboard.writeText(t).then(()=>showNotification('Copied!','success')).catch(()=>showNotification('Failed','error'));
+        const shareMessage=t=>navigator.share?navigator.share({title:'AI Tutor',text:t}).catch(()=>{}):showNotification('Share not supported','error');
+
+        // ============ CHAT FUNCTIONS ============
+        function sendMessage(){const msg=messageInput.value.trim();if(!msg){showNotification('Enter message','error');return;}if(messageHistory.length>0&&messageHistory[messageHistory.length-1].role==='user'){showNotification('Wait for response','error');return;}addMessage(msg,true);messageHistory.push({role:'user',content:msg});messageInput.value='';sendBtn.disabled=true;quickPrompts.style.display='none';getAIResponse(msg);}
+        const sendQuickPrompt=p=>{messageInput.value=p;setTimeout(sendMessage,100);};
+        const handleKeyPress=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}};
+
+        function getAIResponse(userMessage) {
+            addLoadingIndicator();
+            
+            if (USE_DEMO_MODE) {
+                // Demo mode - simulate AI response
+                setTimeout(() => {
+                    removeLoadingIndicator();
+                    const demoResponses = getDemoResponse(userMessage);
+                    addMessage(demoResponses, false);
+                    messageHistory.push({ role: 'assistant', content: demoResponses });
+                    sendBtn.disabled = false;
+                }, 1500);
+            } else {
+                // Real API call
+                callOpenAIAPI(userMessage);
+            }
+        }
+
+        function callOpenAIAPI(userMessage) {
+            if (API_KEY === 'your-api-key-here') {
+                removeLoadingIndicator();
+                showNotification('Please configure your API key in the code', 'error');
+                sendBtn.disabled = false;
+                return;
+            }
+
+            fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'You are an expert AI tutor helping students learn. Provide clear, concise, and helpful explanations. Format your responses with proper formatting (use bold, code blocks, lists, etc.) when appropriate.'
+                        },
+                        ...messageHistory,
+                        { role: 'user', content: userMessage }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1000
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                removeLoadingIndicator();
+                const aiResponse = data.choices[0].message.content;
+                addMessage(aiResponse, false);
+                messageHistory.push({ role: 'assistant', content: aiResponse });
+                sendBtn.disabled = false;
+            })
+            .catch(error => {
+                removeLoadingIndicator();
+                console.error('Error:', error);
+                showNotification('Failed to get response. Please try again.', 'error');
+                sendBtn.disabled = false;
+            });
+        }
+
+        function getDemoResponse(msg) {
+            const m = msg.toLowerCase();
+            const topics = {
+                'hash|map|hashtable': 'Hash Maps are data structures using hash functions to map keys to values. Time: O(1) lookup. Used in caching, databases. JavaScript: `const map = new Map(); map.set("key", value);`',
+                'binary|search|sorted': 'Binary Search finds values in sorted arrays in O(log n) time by halving search space. Algorithm: middle → compare → left/right half. Much faster than linear search!',
+                'tree|node|leaf|root': 'Trees are hierarchical structures. Root (top), nodes, leaves (bottom). Types: Binary Tree, BST, AVL. Used in filesystems, databases, XML parsing.',
+                'sort|bubble|merge|quick': 'Sorting arranges data. Bubble (slow, O(n²)), Merge (fast, O(n log n)), Quick (average O(n log n)). Choose based on data size and properties.',
+                'array|list|vector': 'Arrays store multiple elements. Fixed size, indexed access O(1). Lists are dynamic. Choose array for speed, list for flexibility.',
+                'stack|queue|lifo|fifo': 'Stack (LIFO): last in, first out - push/pop. Queue (FIFO): first in, first out - enqueue/dequeue. Used in browsers, printing, scheduling.',
+                'graph|node|edge|vertex': 'Graphs connect nodes via edges. Types: directed, undirected, weighted. Used in maps, social networks, networks. BFS/DFS for traversal.',
+                'loop|while|for|iteration': 'Loops repeat code. For: fixed iterations. While: condition-based. Do-while: runs once then checks. Foreach: iterate collections.',
+                'function|method|parameter': 'Functions take inputs (parameters), process, return outputs. Reusable code blocks. Parameters = definition, arguments = call.',
+                'variable|data|type': 'Variables store data. Types: int, string, boolean, array, object. Scope: global (everywhere), local (function only).',
+                'condition|if|else|switch': 'If/else branches code execution. Switch handles multiple conditions cleanly. Ternary: `condition ? true : false`',
+                'class|object|oop': 'OOP: organize code with classes (blueprints) → objects (instances). Features: encapsulation, inheritance, polymorphism.',
+                'database|sql|query': 'Databases store structured data. SQL queries: SELECT (read), INSERT (add), UPDATE (modify), DELETE (remove).',
+                'api|http|request': 'APIs let programs communicate. HTTP methods: GET (fetch), POST (send), PUT (update), DELETE (remove). JSON = data format.',
+                'javascript|html|css': 'JavaScript = logic/interactivity, HTML = structure, CSS = styling. Together create web pages.',
+                'python|java|cpp': 'Popular languages. Python: easy, scripting. Java: enterprise, OOP. C++: performance, systems programming.',
+                'debug|error|bug': 'Debugging finds/fixes errors. Use console.log(), breakpoints, test cases. Read error messages carefully!',
+                'default': 'I can help with: DSA, programming, databases, web dev, algorithms, OOP, and more. Ask me anything - explain concepts, solve problems, show examples! 📚'
+            };
+            
+            for (const [keys, answer] of Object.entries(topics)) {
+                if (keys.split('|').some(k => m.includes(k))) return answer;
+            }
+            return topics.default;
+        }
+
+        // ============ VOICE INPUT FUNCTIONS ============
+        function toggleVoiceInput() {
+            if (isRecording) {
+                stopVoiceInput();
+            } else {
+                startVoiceInput();
+            }
+        }
+
+        function startVoiceInput() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showNotification('Voice input not supported on this device', 'error');
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        processAudioInput(audioBlob);
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    voiceBtn.classList.add('recording');
+                    showNotification('🎤 Recording... Click again to stop', 'success');
+                })
+                .catch(error => {
+                    console.error('Error accessing microphone:', error);
+                    showNotification('Unable to access microphone. Check permissions.', 'error');
+                });
+        }
+
+        function stopVoiceInput() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                voiceBtn.classList.remove('recording');
+                showNotification('Processing audio...', 'success');
+            }
+        }
+
+        function processAudioInput(audioBlob) {
+            // In a real app, you would send this to a speech-to-text API
+            // For now, we'll show a demo message
+            const reader = new FileReader();
+            reader.onload = function() {
+                // Simulate transcription
+                const demoTranscription = "Can you explain how binary search works?";
+                messageInput.value = demoTranscription;
+                showNotification('Transcribed: ' + demoTranscription, 'success');
+                sendMessage();
+            };
+            reader.readAsArrayBuffer(audioBlob);
+        }
+
+        // ============ FILE UPLOAD FUNCTIONS ============
+        function openUploadModal() {
+            uploadModal.classList.add('active');
+        }
+
+        function closeUploadModal() {
+            uploadModal.classList.remove('active');
+            uploadType = '';
+        }
+
+        function triggerFileUpload(type) {
+            uploadType = type;
+            const accept = type === 'image' ? 'image/*' : 'text/plain,.txt,.cpp,.java,.py,.js,.html,.css,.xml,.json';
+            fileInput.accept = accept;
+            fileInput.click();
+            closeUploadModal();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { showNotification('File too large (max 5MB)', 'error'); return; }
+            const isImage = uploadType === 'image';
+            const msgText = isImage ? `📷 Image: ${file.name}` : `💻 Code: ${file.name}`;
+            addMessage(msgText, true);
+            messageHistory.push({ role: 'user', content: msgText });
+            addLoadingIndicator();
+            setTimeout(() => {
+                removeLoadingIndicator();
+                const resp = isImage 
+                    ? `Got your image "${file.name}". What help do you need? Explain it, solve it, or analyze it?`
+                    : `Got your code "${file.name}". I can explain, debug, optimize, or improve it. What next?`;
+                addMessage(resp, false);
+                messageHistory.push({ role: 'assistant', content: resp });
+                sendBtn.disabled = false;
+                showNotification('File uploaded!', 'success');
+            }, 800);
+        }
+
+        // Close modal when clicking outside
+        uploadModal.addEventListener('click', function(e) {
+            if (e.target === uploadModal) {
+                closeUploadModal();
+            }
+        });
+
+        // Initialize
+        console.log('AI Tutor Chat loaded. Demo mode:', USE_DEMO_MODE);
+    </script>
+</body>
+</html>

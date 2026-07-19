@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Dashboard - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #ff7675;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg);
+            min-height: 100vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Content area */
+        .content {
+            padding: 20px;
+            padding-bottom: 40px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title span {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: normal;
+        }
+
+        /* Pure CSS Donut Chart (Quiz Accuracy) */
+        .donut-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .donut-chart {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0% 82%, var(--border) 82% 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .donut-inner {
+            width: 90px;
+            height: 90px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .donut-inner h2 { font-size: 24px; color: var(--success); }
+        .donut-inner p { font-size: 11px; color: var(--text-light); }
+
+        /* Pure CSS Bar Chart (Study Hours) */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 120px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border);
+            margin-bottom: 10px;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 30px;
+        }
+
+        .bar {
+            width: 100%;
+            background: var(--primary-light);
+            border-radius: 4px;
+            transition: height 0.5s ease;
+        }
+
+        .bar.active {
+            background: var(--primary);
+        }
+
+        .bar-label {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        /* Subject Progress Bars */
+        .subject-item {
+            margin-bottom: 15px;
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .prog-bg {
+            background: var(--border);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .prog-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-box p {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .goal-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(0, 184, 148, 0.1);
+            color: var(--success);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+            <h1>My Progress</h1>
+        </div>
+
+        <div class="content">
+
+            <!-- Study Hours Bar Chart -->
+            <div class="card">
+                <div class="card-title">Study Hours <span>This Week</span></div>
+                <div class="bar-chart">
+                    <div class="bar-wrapper"><div class="bar" style="height: 40%;"></div><div class="bar-label">M</div></div>
+                    <div class="bar-wrapper"><div class="bar" style="height: 60%;"></div><div class="bar-label">T</div></div>
+                    <div class="bar-wrapper"><div class="bar" style="height: 90%;"></div><div class="bar-label">W</div></div>
+                    <div class="bar-wrapper"><div class="bar active" style="height: 75%;"></div><div class="bar-label">T</div></div>
+                    <div class="bar-wrapper"><div class="bar" style="height: 50%;"></div><div class="bar-label">F</div></div>
+                    <div class="bar-wrapper"><div class="bar" style="height: 30%;"></div><div class="bar-label">S</div></div>
+                    <div class="bar-wrapper"><div class="bar" style="height: 20%;"></div><div class="bar-label">S</div></div>
+                </div>
+                <div style="text-align: center; font-size: 13px; color: var(--text-light); margin-top: 10px;">
+                    Total: <strong style="color: var(--text);">14.5 hours</strong>
+                </div>
+            </div>
+
+            <!-- Quiz Accuracy Donut Chart -->
+            <div class="card">
+                <div class="card-title">Quiz Accuracy <span>All Time</span></div>
+                <div class="donut-container">
+                    <div class="donut-chart">
+                        <div class="donut-inner">
+                            <h2>82%</h2>
+                            <p>Average</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; font-size: 13px; color: var(--text-light); margin-top: 15px;">
+                    You're in the top <strong style="color: var(--primary);">15%</strong> of students!
+                </div>
+            </div>
+
+            <!-- Subject-wise Improvement -->
+            <div class="card">
+                <div class="card-title">Subject Improvement <span>Current vs Target</span></div>
+                
+                <div class="subject-item">
+                    <div class="subject-header">
+                        <span>Physics</span>
+                        <span style="color: var(--primary);">75%</span>
+                    </div>
+                    <div class="prog-bg"><div class="prog-fill" style="width: 75%; background: var(--primary);"></div></div>
+                </div>
+                
+                <div class="subject-item">
+                    <div class="subject-header">
+                        <span>Mathematics</span>
+                        <span style="color: var(--success);">90%</span>
+                    </div>
+                    <div class="prog-bg"><div class="prog-fill" style="width: 90%; background: var(--success);"></div></div>
+                </div>
+
+                <div class="subject-item">
+                    <div class="subject-header">
+                        <span>Chemistry</span>
+                        <span style="color: var(--warning);">55%</span>
+                    </div>
+                    <div class="prog-bg"><div class="prog-fill" style="width: 55%; background: var(--warning);"></div></div>
+                </div>
+            </div>
+
+            <!-- Goals & Stats -->
+            <div class="card">
+                <div class="card-title">Overall Stats</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <h3>1,204</h3>
+                        <p>Questions Solved</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>34</h3>
+                        <p>Quizzes Taken</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>12</h3>
+                        <p>AI Notes Used</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>5</h3>
+                        <p>Day Streak 🔥</p>
+                    </div>
+                </div>
+
+                <div class="goal-badge">
+                    <span style="font-size: 20px;">🏆</span>
+                    <div>
+                        <div style="font-weight: 700;">Goal Achieved!</div>
+                        <div style="font-size: 11px; font-weight: normal;">Studied 10 hours this week</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

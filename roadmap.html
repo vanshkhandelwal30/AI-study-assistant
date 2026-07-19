@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Roadmap Generator - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #8e82ef;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --success: #00b894;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg);
+            min-height: 100vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Views */
+        .view-section {
+            padding: 20px;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Input Form */
+        .input-group {
+            margin-bottom: 20px;
+            background: var(--surface);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .input-group input, 
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            background: var(--bg);
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        /* Output Section */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .hero-banner h2 { font-size: 22px; margin-bottom: 5px; }
+        .hero-banner p { font-size: 14px; opacity: 0.9; }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        /* Roadmap Timeline */
+        .roadmap {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 30px;
+        }
+
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 5px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .milestone {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .milestone::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+            border: 2px solid var(--bg);
+        }
+
+        .milestone.active::before {
+            background: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .milestone.completed::before {
+            background: var(--success);
+        }
+
+        .milestone-card {
+            background: var(--surface);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .milestone-card h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+        }
+
+        .milestone.completed .badge {
+            background: rgba(0, 184, 148, 0.1);
+            color: var(--success);
+        }
+
+        .milestone-card p {
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        /* Daily Tasks */
+        .task-list {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .task-content {
+            flex-grow: 1;
+        }
+
+        .task-content h5 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .task-content p {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+            <h1>Roadmap Generator</h1>
+        </div>
+
+        <!-- INPUT VIEW -->
+        <div class="view-section active" id="inputView">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div style="font-size: 40px; margin-bottom: 10px;">🗺️</div>
+                <h2 style="font-size: 18px; color: var(--text);">Plan Your Journey</h2>
+                <p style="font-size: 13px; color: var(--text-light);">Let AI build a step-by-step path to master any subject.</p>
+            </div>
+
+            <div class="input-group">
+                <label>Course / Topic</label>
+                <input type="text" placeholder="e.g. Python Programming, Machine Learning">
+            </div>
+
+            <div class="input-group">
+                <label>Target Goal</label>
+                <select>
+                    <option>Exam Preparation</option>
+                    <option>Certification</option>
+                    <option>General Mastery</option>
+                    <option>Job Interview Prep</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Time Available</label>
+                <select>
+                    <option>1 Month Crash Course</option>
+                    <option>3 Months Pace</option>
+                    <option>6 Months Deep Dive</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="generateRoadmap()">Generate Roadmap 🚀</button>
+        </div>
+
+        <!-- OUTPUT VIEW -->
+        <div class="view-section" id="outputView">
+            
+            <div class="hero-banner">
+                <h2>Python Mastery</h2>
+                <p>3-Month Certification Roadmap</p>
+            </div>
+
+            <!-- Daily Tasks -->
+            <div class="section-title">📅 Today's Tasks</div>
+            <div class="task-list" style="margin-bottom: 30px;">
+                <label class="task-item">
+                    <input type="checkbox" checked>
+                    <div class="task-content">
+                        <h5>Read Intro to Python Variables</h5>
+                        <p>Est. 20 mins • Fundamentals</p>
+                    </div>
+                </label>
+                <label class="task-item">
+                    <input type="checkbox">
+                    <div class="task-content">
+                        <h5>Complete Coding Exercise 1.1</h5>
+                        <p>Est. 45 mins • Practice</p>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Weekly Milestones -->
+            <div class="section-title">📍 Weekly Milestones</div>
+            <div class="roadmap">
+                
+                <div class="milestone completed">
+                    <div class="milestone-card">
+                        <h4>Week 1: Fundamentals <span class="badge">Completed</span></h4>
+                        <p>Variables, Data Types, and Basic Operators.</p>
+                    </div>
+                </div>
+
+                <div class="milestone active">
+                    <div class="milestone-card" style="border-color: var(--primary);">
+                        <h4>Week 2: Control Flow <span class="badge">Current</span></h4>
+                        <p>If/Else statements, For loops, and While loops.</p>
+                    </div>
+                </div>
+
+                <div class="milestone">
+                    <div class="milestone-card">
+                        <h4>Week 3: Functions & Modules</h4>
+                        <p>Writing reusable code and importing external libraries.</p>
+                    </div>
+                </div>
+                
+                <div class="milestone">
+                    <div class="milestone-card">
+                        <h4>Week 4: Capstone Project</h4>
+                        <p>Build a CLI application using everything learned so far.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--border); box-shadow: none;" onclick="resetGenerator()">Edit Roadmap</button>
+
+        </div>
+
+    </div>
+
+    <script>
+        function generateRoadmap() {
+            const btn = document.querySelector('#inputView .btn');
+            btn.innerHTML = 'Mapping your path... ⚙️';
+            
+            setTimeout(() => {
+                document.getElementById('inputView').classList.remove('active');
+                document.getElementById('outputView').classList.add('active');
+                btn.innerHTML = 'Generate Roadmap 🚀'; // Reset text
+            }, 800);
+        }
+
+        function resetGenerator() {
+            document.getElementById('outputView').classList.remove('active');
+            document.getElementById('inputView').classList.add('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Workspace - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #8e82ef;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --warning: #fdcb6e;
+            --danger: #ff7675;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg);
+            min-height: 100vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        /* Folder Organization UI */
+        .folders-bar {
+            background: var(--surface);
+            padding: 10px 20px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border);
+            scrollbar-width: none;
+        }
+        
+        .folders-bar::-webkit-scrollbar { display: none; }
+
+        .folder-chip {
+            white-space: nowrap;
+            background: var(--bg);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .folder-chip.active {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Editor Area */
+        .editor-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+        }
+
+        .note-title-input {
+            width: 100%;
+            padding: 20px 20px 10px;
+            border: none;
+            font-size: 24px;
+            font-weight: 700;
+            outline: none;
+            color: var(--text);
+            background: transparent;
+        }
+        
+        .note-title-input::placeholder { color: var(--border); }
+
+        .note-meta {
+            padding: 0 20px 10px;
+            font-size: 11px;
+            color: var(--text-light);
+            display: flex;
+            gap: 15px;
+        }
+
+        .note-content {
+            flex-grow: 1;
+            padding: 10px 20px 20px;
+            font-size: 15px;
+            line-height: 1.6;
+            outline: none;
+            overflow-y: auto;
+        }
+
+        .note-content:empty:before {
+            content: attr(placeholder);
+            color: var(--text-light);
+            pointer-events: none;
+            display: block; /* For Firefox */
+        }
+
+        .highlighted-text {
+            background-color: rgba(253, 203, 110, 0.4);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        /* Mock Diagram Image */
+        .mock-diagram {
+            width: 100%;
+            height: 150px;
+            background: var(--bg);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-light);
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        /* Voice Note Badge */
+        .voice-note-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 10px 0;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.02);
+        }
+
+        .tool-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tool-btn:hover, .tool-btn.active {
+            color: var(--primary);
+        }
+
+        .tool-label {
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        /* Float Action Button for New Note */
+        .fab {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s;
+        }
+
+        .fab:active { transform: scale(0.9); }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+                <h1>Notes</h1>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="alert('Search notes...')">🔍</button>
+                <button class="icon-btn" onclick="alert('Note settings...')">⋮</button>
+            </div>
+        </div>
+
+        <!-- Folder UI -->
+        <div class="folders-bar">
+            <div class="folder-chip active">📂 All Notes</div>
+            <div class="folder-chip">📘 Physics</div>
+            <div class="folder-chip">📐 Calculus</div>
+            <div class="folder-chip">🧬 Biology</div>
+            <div class="folder-chip" style="border: 1px dashed var(--border); background: transparent;">+ New Folder</div>
+        </div>
+
+        <!-- Editor Area -->
+        <div class="editor-container">
+            <input type="text" class="note-title-input" placeholder="Note Title" value="Newton's Laws Summary">
+            
+            <div class="note-meta">
+                <span>Last edited: Today, 10:45 AM</span>
+                <span>📁 Physics Folder</span>
+            </div>
+
+            <!-- Content Editable for real editing feel -->
+            <div class="note-content" contenteditable="true" placeholder="Start typing your notes here...">
+                Here are my quick notes on classical mechanics.
+                <br><br>
+                <strong>First Law (Inertia):</strong> An object will not change its motion unless a force acts on it.
+                <br><br>
+                <span class="highlighted-text"><strong>Second Law (F=ma):</strong> The force on an object is equal to its mass times its acceleration.</span> (This is super important for the midterm!)
+                
+                <div class="mock-diagram" contenteditable="false">
+                    <span style="font-size: 24px; margin-bottom: 5px;">📐</span>
+                    [ Hand-drawn Force Vector Diagram ]
+                </div>
+                
+                <strong>Third Law:</strong> When two objects interact, they apply forces to each other of equal magnitude and opposite direction.
+                <br>
+                <div class="voice-note-badge" contenteditable="false" onclick="alert('Playing voice note: Professor explanation...')">
+                    ▶️ Voice Memo: Prof's Explanation (1:12)
+                </div>
+            </div>
+        </div>
+
+        <!-- New Note FAB -->
+        <button class="fab" onclick="alert('Create a new blank note')">+</button>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button class="tool-btn" title="Text Formatting" onclick="document.execCommand('bold',false,null)">
+                <span>𝐁</span>
+                <span class="tool-label">Format</span>
+            </button>
+            <button class="tool-btn active" title="Highlight Text" onclick="alert('Highlight mode enabled!')">
+                <span>🖍️</span>
+                <span class="tool-label">Highlight</span>
+            </button>
+            <button class="tool-btn" title="Draw Diagram" onclick="alert('Opening canvas to draw a diagram...')">
+                <span>✍️</span>
+                <span class="tool-label">Draw</span>
+            </button>
+            <button class="tool-btn" title="Record Voice Note" onclick="alert('Microphone activated. Recording voice note...')">
+                <span>🎤</span>
+                <span class="tool-label">Record</span>
+            </button>
+            <button class="tool-btn" title="Insert Attachment" onclick="alert('Open gallery or files...')">
+                <span>📎</span>
+                <span class="tool-label">Attach</span>
+            </button>
+        </div>
+
+    </div>
+
+</body>
+</html>

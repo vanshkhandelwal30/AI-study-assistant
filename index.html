@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Study Assistant</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --bg: #F8F9FA;
+            --text: #2D3436;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px; /* iPhone Max width */
+            background-color: var(--white);
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        .hero h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            background-color: var(--white);
+            color: var(--primary);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Preview Snippet */
+        .preview-snippet {
+            margin: -30px 20px 20px;
+            background: var(--white);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .preview-snippet .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .preview-snippet .chat-bubble {
+            background: var(--bg);
+            padding: 10px 15px;
+            border-radius: 15px;
+            border-top-left-radius: 0;
+            font-size: 14px;
+        }
+
+        section {
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        /* Benefits */
+        .benefits ul {
+            list-style: none;
+        }
+
+        .benefits li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 15px;
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .benefits li::before {
+            content: '✓';
+            color: var(--primary);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background-color: var(--bg);
+        }
+
+        .slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 15px;
+            padding-bottom: 10px;
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .slider::-webkit-scrollbar {
+            display: none; /* Chrome */
+        }
+
+        .testimonial-card {
+            min-width: 280px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: 15px;
+            scroll-snap-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .testimonial-card p {
+            font-style: italic;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .testimonial-card span {
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--primary);
+        }
+
+        /* FAQ */
+        .faq-item {
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            background: var(--white);
+            padding: 15px;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .faq-answer {
+            background: var(--bg);
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 150px;
+            padding: 15px;
+        }
+
+        .faq-item.active .faq-question span {
+            transform: rotate(45deg);
+        }
+
+        .faq-question span {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <!-- Hero Section -->
+        <header class="hero">
+            <h1>Learn Faster, Smarter.</h1>
+            <p>Your personal AI tutor available 24/7. Master any subject with interactive, tailored lessons.</p>
+            <button class="btn" onclick="window.location.href='auth.html'">Start Learning</button>
+        </header>
+
+        <!-- AI Assistant Preview Snippet -->
+        <div class="preview-snippet">
+            <div class="avatar">AI</div>
+            <div class="chat-bubble">
+                Hi! What would you like to learn today? Calculus or Physics?
+            </div>
+        </div>
+
+        <!-- Key Benefits List -->
+        <section class="benefits">
+            <h2>Why Choose Us?</h2>
+            <ul>
+                <li>Personalized study plans tailored to you</li>
+                <li>Instant answers to complex questions</li>
+                <li>Track your progress with smart analytics</li>
+                <li>Interactive quizzes & flashcards</li>
+            </ul>
+        </section>
+
+        <!-- Testimonials Slider -->
+        <section class="testimonials">
+            <h2>What Students Say</h2>
+            <div class="slider">
+                <div class="testimonial-card">
+                    <p>"This AI completely changed how I study for exams. I went from a C to an A in Math!"</p>
+                    <span>- Sarah J.</span>
+                </div>
+                <div class="testimonial-card">
+                    <p>"It's like having a private tutor in my pocket at all times. Highly recommended."</p>
+                    <span>- David M.</span>
+                </div>
+                <div class="testimonial-card">
+                    <p>"The best study app I've ever used. The explanations are incredibly clear."</p>
+                    <span>- Emily R.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq">
+            <h2>FAQ</h2>
+            <div class="faq-item">
+                <div class="faq-question">Is it really free? <span>+</span></div>
+                <div class="faq-answer">Yes, we offer a generous free tier to get you started with basic AI assistance.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">What subjects are covered? <span>+</span></div>
+                <div class="faq-answer">Our AI covers Math, Science, History, Coding, Languages, and much more!</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Can it help with homework? <span>+</span></div>
+                <div class="faq-answer">Absolutely! Just take a picture or type out your homework problem for step-by-step guidance.</div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Simple script for FAQ accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                // Close others
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                // Toggle current
+                item.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

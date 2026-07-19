@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Notes - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #8e82ef;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --danger: #ff7675;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg);
+            min-height: 100vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Content */
+        .content {
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-bottom: 40px;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            background: var(--surface);
+            border: 2px dashed var(--primary);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 25px;
+        }
+
+        .upload-zone:hover {
+            background: rgba(108, 92, 231, 0.03);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .upload-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .upload-subtitle {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .supported-formats {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .format-tag {
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        /* File List */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .file-card {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+        }
+
+        .file-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .file-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .file-icon.pdf { background: rgba(255, 118, 117, 0.1); color: var(--danger); }
+        .file-icon.img { background: rgba(0, 184, 148, 0.1); color: #00b894; }
+
+        .file-info {
+            flex-grow: 1;
+        }
+
+        .file-info h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+
+        .file-info p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* Action Chips */
+        .ai-actions-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .actions-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .action-chip {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-chip:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+            <h1>Upload Notes</h1>
+        </div>
+
+        <div class="content">
+            
+            <!-- Upload UI -->
+            <div class="upload-zone" onclick="alert('File explorer opened!')">
+                <div class="upload-icon">📤</div>
+                <div class="upload-title">Tap to Upload or Drag & Drop</div>
+                <div class="upload-subtitle">Maximum file size 50MB</div>
+                
+                <div class="supported-formats">
+                    <span class="format-tag">PDF</span>
+                    <span class="format-tag">PPT</span>
+                    <span class="format-tag">DOCX</span>
+                    <span class="format-tag">JPG/PNG</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-light); margin-top: 10px;">
+                    Works great with handwritten notes too! ✍️
+                </div>
+            </div>
+
+            <!-- Uploaded Files -->
+            <div class="section-title">Recent Uploads</div>
+
+            <!-- File 1: PDF -->
+            <div class="file-card">
+                <div class="file-header">
+                    <div class="file-icon pdf">PDF</div>
+                    <div class="file-info">
+                        <h4>Biology_Chapter_4.pdf</h4>
+                        <p>3.2 MB • Uploaded Today</p>
+                    </div>
+                    <div style="color: var(--text-light); cursor: pointer;">⋮</div>
+                </div>
+                
+                <div class="ai-actions-title">✨ AI Actions</div>
+                <div class="actions-grid">
+                    <div class="action-chip" onclick="alert('Summarizing document...')">📝 Summarize</div>
+                    <div class="action-chip" onclick="alert('Creating flashcards...')">🗂️ Flashcards</div>
+                    <div class="action-chip" onclick="alert('Generating quiz...')">❓ Quiz Me</div>
+                    <div class="action-chip" onclick="alert('Highlighting key points...')">🖍️ Highlight Key Points</div>
+                </div>
+            </div>
+
+            <!-- File 2: Image / Handwritten -->
+            <div class="file-card">
+                <div class="file-header">
+                    <div class="file-icon img">IMG</div>
+                    <div class="file-info">
+                        <h4>Handwritten_Math_Notes.jpg</h4>
+                        <p>1.8 MB • Uploaded Yesterday</p>
+                    </div>
+                    <div style="color: var(--text-light); cursor: pointer;">⋮</div>
+                </div>
+                
+                <div class="ai-actions-title">✨ AI Actions</div>
+                <div class="actions-grid">
+                    <div class="action-chip" onclick="alert('Explaining sections step by step...')">🧠 Explain Sections</div>
+                    <div class="action-chip" onclick="alert('Generating quiz from handwritten notes...')">❓ Quiz Me</div>
+                    <div class="action-chip" onclick="alert('Transcribing to text...')">✍️ Transcribe to Text</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

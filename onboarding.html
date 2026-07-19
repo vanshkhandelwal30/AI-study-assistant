@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #8e82ef;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg);
+            min-height: 100vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 40px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 24px 30px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .form-content {
+            padding: 0 24px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .input-group input[type="text"], 
+        .input-group select, 
+        .input-group textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .input-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23636E72%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+        }
+
+        .input-group input:focus, 
+        .input-group select:focus, 
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+        }
+
+        .input-group textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        /* Chips for multi-select (Subjects) */
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chip {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Submit Button */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .range-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .range-slider-container input[type="range"] {
+            flex-grow: 1;
+            accent-color: var(--primary);
+        }
+
+        .time-display {
+            font-weight: bold;
+            color: var(--primary);
+            min-width: 60px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <div class="header">
+            <h1>Personalize Your AI</h1>
+            <p>Tell us about your studies to get the best tailored experience.</p>
+        </div>
+
+        <div class="form-content">
+            
+            <div class="input-group">
+                <label>College / School Name</label>
+                <input type="text" placeholder="e.g. Stanford University">
+            </div>
+
+            <div class="input-group" style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label>Branch / Major</label>
+                    <input type="text" placeholder="e.g. Computer Science">
+                </div>
+                <div style="flex: 1;">
+                    <label>Year / Semester</label>
+                    <select>
+                        <option>1st Year</option>
+                        <option>2nd Year</option>
+                        <option>3rd Year</option>
+                        <option>4th Year</option>
+                        <option>Masters</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Subjects (Select multiple)</label>
+                <div class="chips-container" id="subject-chips">
+                    <div class="chip" onclick="toggleChip(this)">Mathematics</div>
+                    <div class="chip" onclick="toggleChip(this)">Physics</div>
+                    <div class="chip" onclick="toggleChip(this)">Programming</div>
+                    <div class="chip" onclick="toggleChip(this)">Data Structures</div>
+                    <div class="chip" onclick="toggleChip(this)">Economics</div>
+                    <div class="chip" onclick="toggleChip(this)">Chemistry</div>
+                    <div class="chip" onclick="toggleChip(this)">History</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Learning Goals</label>
+                <textarea placeholder="e.g. I want to ace my final exams and improve my coding skills..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Preferred Language</label>
+                <select>
+                    <option>English</option>
+                    <option>Spanish</option>
+                    <option>French</option>
+                    <option>Hindi</option>
+                    <option>Mandarin</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Daily Study Time Target</label>
+                <div class="range-slider-container">
+                    <input type="range" min="1" max="8" value="2" oninput="updateTime(this.value)">
+                    <div class="time-display" id="time-val">2 hours</div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="window.location.href='dashboard.html'">Complete Setup</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleChip(element) {
+            element.classList.toggle('selected');
+        }
+
+        function updateTime(val) {
+            document.getElementById('time-val').innerText = val + (val == 1 ? ' hour' : ' hours');
+        }
+    </script>
+</body>
+</html>

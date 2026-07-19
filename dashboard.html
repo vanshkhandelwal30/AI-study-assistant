@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Study</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --border: #DFE6E9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #ff7675;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg);
+            min-height: 100vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 80px; /* Space for bottom nav */
+        }
+
+        /* Header / Welcome */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 24px 30px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .user-greeting {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .streak-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        /* Main Content area */
+        .content {
+            padding: 20px 24px;
+            margin-top: -20px; /* pull up slightly over header */
+        }
+
+        /* Sections */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text);
+            margin-top: 25px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+
+        /* Progress Bar */
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .progress-bar-bg {
+            background: var(--border);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: var(--success);
+            height: 100%;
+            width: 75%; /* Example progress */
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        /* Quick Actions Grid */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .action-card {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 1px solid var(--border);
+        }
+
+        .action-card:active {
+            transform: scale(0.95);
+        }
+
+        .action-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .action-card span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* List Items (Exams/Activity) */
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .list-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .list-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .list-icon.warning { background: rgba(253, 203, 110, 0.1); color: var(--warning); }
+        
+        .list-details h4 {
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+        
+        .list-details p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .list-right {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid var(--border);
+            z-index: 10;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="user-greeting">Hi, Alex! 👋</div>
+                <div class="streak-badge">🔥 5 Days</div>
+            </div>
+            <p>You're doing great! Keep up the momentum.</p>
+        </div>
+
+        <div class="content">
+            <!-- Today's Plan & Progress -->
+            <div class="card" style="margin-top: -40px; position: relative; z-index: 2;">
+                <h3 style="font-size: 16px; margin-bottom: 15px;">Today's Study Plan</h3>
+                
+                <div class="progress-header">
+                    <span>Daily Goal: 3h</span>
+                    <span style="color: var(--primary);">2h 15m done</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill"></div>
+                </div>
+                <p style="font-size: 13px; color: var(--text-light); margin-top: 10px;">75% completed. 45 mins left!</p>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="section-title">Quick Actions</div>
+            <div class="quick-actions">
+                <div class="action-card" onclick="window.location.href='focus.html'">
+                    <div class="action-icon">▶️</div>
+                    <span>Resume</span>
+                </div>
+                <div class="action-card" onclick="window.location.href='chat.html'">
+                    <div class="action-icon">🤖</div>
+                    <span>Ask AI</span>
+                </div>
+                <div class="action-card" onclick="window.location.href='quiz.html'">
+                    <div class="action-icon">📝</div>
+                    <span>Take Quiz</span>
+                </div>
+                <div class="action-card" onclick="window.location.href='flashcards.html'">
+                    <div class="action-icon">🗂️</div>
+                    <span>Flashcards</span>
+                </div>
+                <div class="action-card" style="grid-column: span 2;" onclick="window.location.href='upload.html'">
+                    <div class="action-icon" style="display: inline-block; margin-right: 5px;">📤</div>
+                    <span>Upload Notes</span>
+                </div>
+            </div>
+
+            <!-- Upcoming Exams -->
+            <div class="section-title">Upcoming Exams</div>
+            <div class="card">
+                <div class="list-item">
+                    <div class="list-item-left">
+                        <div class="list-icon warning">P</div>
+                        <div class="list-details">
+                            <h4>Physics Midterm</h4>
+                            <p>Chapter 4 - Kinematics</p>
+                        </div>
+                    </div>
+                    <div class="list-right">in 3 days</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-left">
+                        <div class="list-icon">M</div>
+                        <div class="list-details">
+                            <h4>Math Quiz</h4>
+                            <p>Integrals & Derivatives</p>
+                        </div>
+                    </div>
+                    <div class="list-right">in 1 week</div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="section-title">Recent Activity</div>
+            <div class="card">
+                <div class="list-item">
+                    <div class="list-item-left">
+                        <div class="list-icon" style="background: rgba(0, 184, 148, 0.1); color: var(--success);">✓</div>
+                        <div class="list-details">
+                            <h4>Completed Python Quiz</h4>
+                            <p>Score: 90%</p>
+                        </div>
+                    </div>
+                    <div class="list-right" style="color: var(--text-light); font-weight: normal;">2h ago</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-left">
+                        <div class="list-icon" style="background: rgba(108, 92, 231, 0.1); color: var(--primary);">🤖</div>
+                        <div class="list-details">
+                            <h4>AI Chat: Data Structures</h4>
+                            <p>Discussed Hash Maps</p>
+                        </div>
+                    </div>
+                    <div class="list-right" style="color: var(--text-light); font-weight: normal;">Yesterday</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <div class="nav-icon">🏠</div>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='planner.html'">
+                <div class="nav-icon">📚</div>
+                <span>Learn</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='chat.html'">
+                <div class="nav-icon">🤖</div>
+                <span>AI Tutor</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='profile.html'">
+                <div class="nav-icon">👤</div>
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
