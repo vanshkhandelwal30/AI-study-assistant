@@ -158,22 +158,50 @@
             transform: scale(0.98);
         }
 
-        .range-slider-container {
-            display: flex;
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            display: none;
             align-items: center;
-            gap: 15px;
+            justify-content: center;
+            z-index: 1000;
         }
 
-        .range-slider-container input[type="range"] {
-            flex-grow: 1;
-            accent-color: var(--primary);
+        .modal-backdrop.active {
+            display: flex;
         }
 
-        .time-display {
-            font-weight: bold;
-            color: var(--primary);
-            min-width: 60px;
-            text-align: right;
+        .modal-card {
+            background: white;
+            width: min(90%, 360px);
+            border-radius: 22px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .modal-card h2 {
+            margin-bottom: 12px;
+            color: var(--text);
+            font-size: 20px;
+        }
+
+        .modal-card p {
+            color: var(--text-light);
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .modal-card .modal-btn {
+            border: none;
+            border-radius: 12px;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -187,19 +215,20 @@
 
         <div class="form-content">
             
-            <div class="input-group">
+                <div class="input-group">
                 <label>College / School Name</label>
-                <input type="text" placeholder="e.g. Stanford University">
+                <input id="college-name" type="text" placeholder="e.g. Stanford University">
             </div>
 
             <div class="input-group" style="display: flex; gap: 15px;">
                 <div style="flex: 1;">
                     <label>Branch / Major</label>
-                    <input type="text" placeholder="e.g. Computer Science">
+                    <input id="branch-major" type="text" placeholder="e.g. Computer Science">
                 </div>
                 <div style="flex: 1;">
                     <label>Year / Semester</label>
-                    <select>
+                    <select id="year-semester">
+                        <option value="">Select year</option>
                         <option>1st Year</option>
                         <option>2nd Year</option>
                         <option>3rd Year</option>
@@ -222,31 +251,15 @@
                 </div>
             </div>
 
-            <div class="input-group">
-                <label>Learning Goals</label>
-                <textarea placeholder="e.g. I want to ace my final exams and improve my coding skills..."></textarea>
-            </div>
+            <button class="btn" onclick="completeSetup()">Complete Setup</button>
+        </div>
+    </div>
 
-            <div class="input-group">
-                <label>Preferred Language</label>
-                <select>
-                    <option>English</option>
-                    <option>Spanish</option>
-                    <option>French</option>
-                    <option>Hindi</option>
-                    <option>Mandarin</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label>Daily Study Time Target</label>
-                <div class="range-slider-container">
-                    <input type="range" min="1" max="8" value="2" oninput="updateTime(this.value)">
-                    <div class="time-display" id="time-val">2 hours</div>
-                </div>
-            </div>
-
-            <button class="btn" onclick="window.location.href='dashboard.html'">Complete Setup</button>
+    <div class="modal-backdrop" id="validation-modal">
+        <div class="modal-card">
+            <h2>Almost there!</h2>
+            <p>Please enter your College / School name, Branch / Major, and Year / Semester before continuing.</p>
+            <button class="modal-btn" onclick="closeModal()">Got it</button>
         </div>
     </div>
 
@@ -255,8 +268,21 @@
             element.classList.toggle('selected');
         }
 
-        function updateTime(val) {
-            document.getElementById('time-val').innerText = val + (val == 1 ? ' hour' : ' hours');
+        function completeSetup() {
+            var collegeName = document.getElementById('college-name').value.trim();
+            var branchMajor = document.getElementById('branch-major').value.trim();
+            var yearSemester = document.getElementById('year-semester').value;
+
+            if (!collegeName || !branchMajor || !yearSemester) {
+                document.getElementById('validation-modal').classList.add('active');
+                return;
+            }
+
+            window.location.href = 'dashboard.html';
+        }
+
+        function closeModal() {
+            document.getElementById('validation-modal').classList.remove('active');
         }
     </script>
 </body>

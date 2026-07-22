@@ -15,6 +15,7 @@
             --border: #DFE6E9;
         }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',system-ui,sans-serif; }
+        html { font-size: 16px; }
         body {
             background:var(--bg); display:flex; justify-content:center; min-height:100vh;
             color:var(--text); transition:all 0.3s;
@@ -29,31 +30,31 @@
             box-shadow:0 2px 10px rgba(0,0,0,0.05); position:sticky; top:0; z-index:10;
             transition:all 0.3s;
         }
-        .back-btn { background:none; border:none; font-size:20px; cursor:pointer; color:var(--text); }
-        .header h1 { font-size:18px; font-weight:700; }
-        .content { padding:20px; }
+        .back-btn { background:none; border:none; font-size:1.25rem; cursor:pointer; color:var(--text); }
+        .header h1 { font-size:1.125rem; font-weight:700; }
+        .content { padding:1.25rem; }
 
         .section-label {
-            font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px;
-            color:var(--text-light); margin:20px 0 10px; padding-left:5px;
+            font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;
+            color:var(--text-light); margin:1.25rem 0 .625rem; padding-left:.3125rem;
         }
         .section-label:first-child { margin-top:0; }
 
         .settings-card {
             background:var(--surface); border-radius:15px; overflow:hidden;
-            border:1px solid var(--border); margin-bottom:5px; transition:all 0.3s;
+            border:1px solid var(--border); margin-bottom:.3125rem; transition:all 0.3s;
         }
 
         .setting-item {
             display:flex; justify-content:space-between; align-items:center;
-            padding:15px 18px; border-bottom:1px solid var(--border); transition:all 0.3s;
+            padding:.9375rem 1.125rem; border-bottom:1px solid var(--border); transition:all 0.3s;
         }
         .setting-item:last-child { border-bottom:none; }
 
-        .setting-left { display:flex; align-items:center; gap:12px; }
-        .setting-icon { font-size:20px; }
-        .setting-info h4 { font-size:14px; font-weight:600; }
-        .setting-info p { font-size:11px; color:var(--text-light); transition:color 0.3s; }
+        .setting-left { display:flex; align-items:center; gap:.75rem; }
+        .setting-icon { font-size:1.25rem; }
+        .setting-info h4 { font-size:.875rem; font-weight:600; }
+        .setting-info p { font-size:.6875rem; color:var(--text-light); transition:color 0.3s; }
 
         /* Toggle Switch */
         .toggle { position:relative; width:44px; height:24px; cursor:pointer; flex-shrink:0; }
@@ -71,14 +72,14 @@
 
         /* Dropdown */
         .setting-select {
-            padding:6px 10px; border:1px solid var(--border); border-radius:8px;
-            font-size:13px; outline:none; background:var(--surface); color:var(--text); transition:all 0.3s;
+            padding:.375rem .625rem; border:1px solid var(--border); border-radius:8px;
+            font-size:.8125rem; outline:none; background:var(--surface); color:var(--text); transition:all 0.3s;
         }
 
         .danger-btn {
-            width:100%; padding:14px; background:none; border:1px solid #ff7675;
-            color:#ff7675; border-radius:12px; font-size:14px; font-weight:600;
-            cursor:pointer; margin-top:25px; text-align:center; transition:all 0.3s;
+            width:100%; padding:.875rem; background:none; border:1px solid #ff7675;
+            color:#ff7675; border-radius:12px; font-size:.875rem; font-weight:600;
+            cursor:pointer; margin-top:1.5625rem; text-align:center; transition:all 0.3s;
         }
         .danger-btn:active { background:#ff7675; color:white; }
 
@@ -110,13 +111,13 @@
 
         <div class="header">
             <button class="back-btn" onclick="window.location.href='profile.html'">←</button>
-            <h1>Settings</h1>
+            <h1 data-i18n-key="settings">Settings</h1>
         </div>
 
         <div class="content">
 
             <!-- Appearance -->
-            <div class="section-label">Appearance</div>
+            <div class="section-label" data-i18n-key="appearance">Appearance</div>
             <div class="settings-card">
                 <div class="setting-item">
                     <div class="setting-left">
@@ -149,51 +150,38 @@
             </div>
 
             <!-- Language -->
-            <div class="section-label">Language</div>
+            <div class="section-label" data-i18n-key="language">Language</div>
             <div class="settings-card">
                 <div class="setting-item">
                     <div class="setting-left">
                         <span class="setting-icon">🌐</span>
                         <div class="setting-info">
-                            <h4>App Language</h4>
+                            <h4 data-i18n-key="appLanguage">App Language</h4>
                             <p id="lang-status">Selected: English</p>
                         </div>
                     </div>
-                    <select class="setting-select" id="langSelect" onchange="changeLang()">
-                        <option>English</option>
-                        <option>Hindi</option>
-                        <option>Spanish</option>
-                        <option>French</option>
+                    <select class="setting-select" id="langSelect" onchange="changeLang()" oninput="changeLang()">
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="French">French</option>
                     </select>
                 </div>
             </div>
 
             <!-- Notifications -->
-            <div class="section-label">Notifications</div>
+            <div class="section-label" data-i18n-key="notifications">Notifications</div>
             <div class="settings-card">
                 <div class="setting-item">
                     <div class="setting-left">
                         <span class="setting-icon">🔔</span>
                         <div class="setting-info">
-                            <h4>Study Reminders</h4>
+                            <h4 data-i18n-key="studyReminders">Study Reminders</h4>
                             <p id="study-status">Enabled</p>
                         </div>
                     </div>
                     <label class="toggle">
-                        <input type="checkbox" checked onchange="toggleNotif(this,'study-status','Study Reminders')">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <div class="setting-left">
-                        <span class="setting-icon">📝</span>
-                        <div class="setting-info">
-                            <h4>Quiz Alerts</h4>
-                            <p id="quiz-status">Enabled</p>
-                        </div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox" checked onchange="toggleNotif(this,'quiz-status','Quiz Alerts')">
+                        <input type="checkbox" id="studyToggle" checked onchange="toggleSetting(this,'study-status','Study Reminders','studyReminders')">
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -201,25 +189,25 @@
                     <div class="setting-left">
                         <span class="setting-icon">📧</span>
                         <div class="setting-info">
-                            <h4>Email Updates</h4>
+                            <h4 data-i18n-key="emailUpdates">Email Updates</h4>
                             <p id="email-status">Disabled</p>
                         </div>
                     </div>
                     <label class="toggle">
-                        <input type="checkbox" onchange="toggleNotif(this,'email-status','Email Updates')">
+                        <input type="checkbox" id="emailToggle" onchange="toggleSetting(this,'email-status','Email Updates','emailUpdates')">
                         <span class="slider"></span>
                     </label>
                 </div>
             </div>
 
             <!-- Accessibility -->
-            <div class="section-label">Accessibility</div>
+            <div class="section-label" data-i18n-key="accessibility">Accessibility</div>
             <div class="settings-card">
                 <div class="setting-item">
                     <div class="setting-left">
                         <span class="setting-icon">🔤</span>
                         <div class="setting-info">
-                            <h4>Font Size</h4>
+                            <h4 data-i18n-key="fontSize">Font Size</h4>
                             <p id="font-status">Current: Medium</p>
                         </div>
                     </div>
@@ -230,53 +218,27 @@
                         <option value="20">Extra Large</option>
                     </select>
                 </div>
-                <div class="setting-item">
-                    <div class="setting-left">
-                        <span class="setting-icon">🔊</span>
-                        <div class="setting-info">
-                            <h4>Screen Reader</h4>
-                            <p id="reader-status">Disabled</p>
-                        </div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox" onchange="toggleNotif(this,'reader-status','Screen Reader')">
-                        <span class="slider"></span>
-                    </label>
-                </div>
             </div>
 
             <!-- Privacy -->
-            <div class="section-label">Privacy</div>
+            <div class="section-label" data-i18n-key="privacy">Privacy</div>
             <div class="settings-card">
                 <div class="setting-item">
                     <div class="setting-left">
                         <span class="setting-icon">🔒</span>
                         <div class="setting-info">
-                            <h4>App Lock</h4>
+                            <h4 data-i18n-key="appLock">App Lock</h4>
                             <p id="lock-status">Disabled</p>
                         </div>
                     </div>
                     <label class="toggle">
-                        <input type="checkbox" onchange="toggleNotif(this,'lock-status','App Lock')">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <div class="setting-left">
-                        <span class="setting-icon">📊</span>
-                        <div class="setting-info">
-                            <h4>Share Analytics</h4>
-                            <p id="analytics-status">Enabled</p>
-                        </div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox" checked onchange="toggleNotif(this,'analytics-status','Analytics')">
+                        <input type="checkbox" id="lockToggle" onchange="toggleSetting(this,'lock-status','App Lock','appLock')">
                         <span class="slider"></span>
                     </label>
                 </div>
             </div>
 
-            <button class="danger-btn" onclick="window.location.href='auth.html'">Log Out</button>
+            <button class="danger-btn" onclick="window.location.href='auth.html'" data-i18n-key="logout">Log Out</button>
         </div>
     </div>
 
@@ -313,11 +275,39 @@
             localStorage.setItem('themeName', name);
         }
 
+        var translations = {
+            English: {
+                settings: 'Settings', appearance: 'Appearance', language: 'Language', notifications: 'Notifications', accessibility: 'Accessibility', privacy: 'Privacy',
+                appLanguage: 'App Language', studyReminders: 'Study Reminders', emailUpdates: 'Email Updates', fontSize: 'Font Size', appLock: 'App Lock', logout: 'Log Out'
+            },
+            Hindi: {
+                settings: 'सेटिंग्स', appearance: 'प्रदर्शन', language: 'भाषा', notifications: 'सूचनाएँ', accessibility: 'सुलभता', privacy: 'गोपनीयता',
+                appLanguage: 'ऐप भाषा', studyReminders: 'अध्ययन अनुस्मारक', emailUpdates: 'ईमेल अपडेट', fontSize: 'फ़ॉन्ट आकार', appLock: 'ऐप लॉक', logout: 'लॉग आउट'
+            },
+            Spanish: {
+                settings: 'Configuración', appearance: 'Apariencia', language: 'Idioma', notifications: 'Notificaciones', accessibility: 'Accesibilidad', privacy: 'Privacidad',
+                appLanguage: 'Idioma de la aplicación', studyReminders: 'Recordatorios de estudio', emailUpdates: 'Actualizaciones por correo', fontSize: 'Tamaño de fuente', appLock: 'Bloqueo de aplicación', logout: 'Cerrar sesión'
+            },
+            French: {
+                settings: 'Paramètres', appearance: 'Apparence', language: 'Langue', notifications: 'Notifications', accessibility: 'Accessibilité', privacy: 'Confidentialité',
+                appLanguage: "Langue de l’application", studyReminders: "Rappels d’étude", emailUpdates: "Mises à jour par e-mail", fontSize: "Taille de la police", appLock: "Verrouillage de l’application", logout: 'Se déconnecter'
+            }
+        };
+
+        function translatePage(lang) {
+            var map = translations[lang] || translations.English;
+            document.querySelectorAll('[data-i18n-key]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n-key');
+                if (map[key]) el.innerText = map[key];
+            });
+        }
+
         // Language Change
         function changeLang() {
             var sel = document.getElementById('langSelect');
             var lang = sel.value;
             document.getElementById('lang-status').innerText = 'Selected: ' + lang;
+            translatePage(lang);
             showToast('🌐 Language: ' + lang);
             localStorage.setItem('language', lang);
         }
@@ -327,17 +317,18 @@
             var sel = document.getElementById('fontSelect');
             var size = sel.value;
             var name = sel.options[sel.selectedIndex].text;
-            document.body.style.fontSize = size + 'px';
+            document.documentElement.style.fontSize = size + 'px';
             document.getElementById('font-status').innerText = 'Current: ' + name;
             showToast('🔤 Font Size: ' + name);
             localStorage.setItem('fontSize', size);
             localStorage.setItem('fontName', name);
         }
 
-        // Toggle any notification/privacy setting
-        function toggleNotif(el, statusId, label) {
+        // Toggle any setting and persist it
+        function toggleSetting(el, statusId, label, key) {
             var on = el.checked;
             document.getElementById(statusId).innerText = on ? 'Enabled' : 'Disabled';
+            localStorage.setItem(key, on);
             showToast((on ? '✅ ' : '❌ ') + label + (on ? ' Enabled' : ' Disabled'));
         }
 
@@ -361,14 +352,27 @@
             if (savedLang) {
                 document.getElementById('langSelect').value = savedLang;
                 document.getElementById('lang-status').innerText = 'Selected: ' + savedLang;
+                translatePage(savedLang);
             }
             // Font Size
             var savedFont = localStorage.getItem('fontSize');
             if (savedFont) {
-                document.body.style.fontSize = savedFont + 'px';
+                document.documentElement.style.fontSize = savedFont + 'px';
                 document.getElementById('fontSelect').value = savedFont;
                 document.getElementById('font-status').innerText = 'Current: ' + (localStorage.getItem('fontName') || 'Medium');
             }
+            // Toggle settings
+            [
+                ['studyToggle','study-status','Study Reminders','studyReminders', true],
+                ['emailToggle','email-status','Email Updates','emailUpdates', false],
+                ['lockToggle','lock-status','App Lock','appLock', false]
+            ].forEach(function(item) {
+                var el = document.getElementById(item[0]);
+                var saved = localStorage.getItem(item[3]);
+                var state = saved === null ? item[4] : saved === 'true';
+                if (el) el.checked = state;
+                document.getElementById(item[1]).innerText = state ? 'Enabled' : 'Disabled';
+            });
         };
     </script>
 </body>

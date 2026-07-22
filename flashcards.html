@@ -271,9 +271,6 @@
             border: 1px solid var(--border);
         }
 
-        .card-front {
-            /* Front specific styles if needed */
-        }
 
         .card-back {
             transform: rotateY(180deg);
@@ -494,9 +491,9 @@
             }
         }
 
-        function toggleFlag() {
+        function toggleFlag(e) {
             document.getElementById('flagBtn').classList.toggle('active');
-            event.stopPropagation(); // prevent flipping card when clicking flag
+            e.stopPropagation(); // prevent flipping card when clicking flag
         }
 
         function nextCard() {

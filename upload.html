@@ -219,7 +219,35 @@
             border-color: var(--primary);
         }
 
+        /* File card menu */
+        .card-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            padding: 8px 6px;
+            z-index: 2000;
+            min-width: 140px;
+        }
+
+        .card-menu button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 8px 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .card-menu button:hover { background: #f6f7fb; }
+
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>if(window.pdfjsLib){window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';}</script>
 </head>
 <body>
 
@@ -233,16 +261,17 @@
         <div class="content">
             
             <!-- Upload UI -->
-            <div class="upload-zone" onclick="alert('File explorer opened!')">
+            <input id="file-input" type="file" style="display:none" multiple onchange="handleFiles(this.files)">
+            <div class="upload-zone" onclick="openFilePicker('')" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
                 <div class="upload-icon">📤</div>
                 <div class="upload-title">Tap to Upload or Drag & Drop</div>
                 <div class="upload-subtitle">Maximum file size 50MB</div>
-                
+
                 <div class="supported-formats">
-                    <span class="format-tag">PDF</span>
-                    <span class="format-tag">PPT</span>
-                    <span class="format-tag">DOCX</span>
-                    <span class="format-tag">JPG/PNG</span>
+                    <span class="format-tag" onclick="event.stopPropagation(); openFilePicker('.pdf')">PDF</span>
+                    <span class="format-tag" onclick="event.stopPropagation(); openFilePicker('.ppt,.pptx')">PPT</span>
+                    <span class="format-tag" onclick="event.stopPropagation(); openFilePicker('.doc,.docx')">DOCX</span>
+                    <span class="format-tag" onclick="event.stopPropagation(); openFilePicker('.jpg,.jpeg,.png')">JPG/PNG</span>
                 </div>
                 <div style="font-size: 11px; color: var(--text-light); margin-top: 10px;">
                     Works great with handwritten notes too! ✍️
@@ -251,48 +280,333 @@
 
             <!-- Uploaded Files -->
             <div class="section-title">Recent Uploads</div>
-
-            <!-- File 1: PDF -->
-            <div class="file-card">
-                <div class="file-header">
-                    <div class="file-icon pdf">PDF</div>
-                    <div class="file-info">
-                        <h4>Biology_Chapter_4.pdf</h4>
-                        <p>3.2 MB • Uploaded Today</p>
-                    </div>
-                    <div style="color: var(--text-light); cursor: pointer;">⋮</div>
-                </div>
-                
-                <div class="ai-actions-title">✨ AI Actions</div>
-                <div class="actions-grid">
-                    <div class="action-chip" onclick="alert('Summarizing document...')">📝 Summarize</div>
-                    <div class="action-chip" onclick="alert('Creating flashcards...')">🗂️ Flashcards</div>
-                    <div class="action-chip" onclick="alert('Generating quiz...')">❓ Quiz Me</div>
-                    <div class="action-chip" onclick="alert('Highlighting key points...')">🖍️ Highlight Key Points</div>
-                </div>
-            </div>
-
-            <!-- File 2: Image / Handwritten -->
-            <div class="file-card">
-                <div class="file-header">
-                    <div class="file-icon img">IMG</div>
-                    <div class="file-info">
-                        <h4>Handwritten_Math_Notes.jpg</h4>
-                        <p>1.8 MB • Uploaded Yesterday</p>
-                    </div>
-                    <div style="color: var(--text-light); cursor: pointer;">⋮</div>
-                </div>
-                
-                <div class="ai-actions-title">✨ AI Actions</div>
-                <div class="actions-grid">
-                    <div class="action-chip" onclick="alert('Explaining sections step by step...')">🧠 Explain Sections</div>
-                    <div class="action-chip" onclick="alert('Generating quiz from handwritten notes...')">❓ Quiz Me</div>
-                    <div class="action-chip" onclick="alert('Transcribing to text...')">✍️ Transcribe to Text</div>
-                </div>
-            </div>
+            <div id="recent-uploads"></div>
 
         </div>
     </div>
 
+    <script>
+        /* Modal for results */
+        function showResultModal(title, html) {
+            var backdrop = document.createElement('div');
+            backdrop.style.position = 'fixed';
+            backdrop.style.inset = 0;
+            backdrop.style.background = 'rgba(0,0,0,0.35)';
+            backdrop.style.display = 'flex';
+            backdrop.style.alignItems = 'center';
+            backdrop.style.justifyContent = 'center';
+            backdrop.style.zIndex = 10000;
+
+            var card = document.createElement('div');
+            card.style.width = 'min(92%,700px)';
+            card.style.maxHeight = '80vh';
+            card.style.overflow = 'auto';
+            card.style.background = 'white';
+            card.style.borderRadius = '12px';
+            card.style.padding = '18px';
+            card.style.boxShadow = '0 20px 50px rgba(0,0,0,0.2)';
+
+            var h = document.createElement('h3');
+            h.innerText = title;
+            h.style.marginTop = '0';
+            card.appendChild(h);
+
+            var content = document.createElement('div');
+            content.innerHTML = html;
+            card.appendChild(content);
+
+            var close = document.createElement('button');
+            close.innerText = 'Close';
+            close.style.marginTop = '12px';
+            close.style.padding = '10px 14px';
+            close.style.border = 'none';
+            close.style.background = 'linear-gradient(135deg,#6C5CE7,#A29BFE)';
+            close.style.color = 'white';
+            close.style.borderRadius = '8px';
+            close.onclick = function(){ backdrop.remove(); };
+            card.appendChild(close);
+
+            backdrop.appendChild(card);
+            document.body.appendChild(backdrop);
+        }
+
+        /* PDF text extraction using PDF.js */
+        function extractTextFromPDFFile(file) {
+            return new Promise(function(resolve, reject){
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var arrayBuffer = reader.result;
+                    var loadingTask = window['pdfjsLib'].getDocument({data: arrayBuffer});
+                    loadingTask.promise.then(function(pdf) {
+                        var maxPages = pdf.numPages;
+                        var countPromises = [];
+                        for (var j = 1; j <= maxPages; j++) {
+                            (function(pageNum) {
+                                countPromises.push(pdf.getPage(pageNum).then(function(page) {
+                                    return page.getTextContent().then(function(textContent){
+                                        return textContent.items.map(function(s){ return s.str; }).join(' ');
+                                    });
+                                }));
+                            })(j);
+                        }
+                        Promise.all(countPromises).then(function(pages) {
+                            resolve(pages.join('\n'));
+                        });
+                    }, function(err){ reject(err); });
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function summarizeText(text, maxSentences) {
+            maxSentences = maxSentences || 3;
+            var sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+            sentences.sort(function(a,b){ return b.length - a.length; });
+            var top = sentences.slice(0, Math.min(maxSentences, sentences.length));
+            return top.join(' ');
+        }
+
+        function highlightKeyPoints(text, max) {
+            max = max || 5;
+            var sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+            sentences.sort(function(a,b){ return b.length - a.length; });
+            return sentences.slice(0, Math.min(max, sentences.length));
+        }
+
+        function generateQuizFromText(text, count) {
+            count = count || 5;
+            var sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+            var quiz = [];
+            var used = new Set();
+            for (var i=0; i<sentences.length && quiz.length < count; i++) {
+                var s = sentences[i];
+                var words = s.replace(/[^a-zA-Z0-9\s]/g,'').split(/\s+/).filter(w=>w.length>3);
+                if (words.length === 0) continue;
+                var answer = words[Math.floor(Math.random()*words.length)];
+                if (used.has(answer.toLowerCase())) continue;
+                used.add(answer.toLowerCase());
+                var blank = s.replace(answer, '_____');
+                // make choices
+                var choices = [answer];
+                for (var k=0; k<3; k++) {
+                    var pick = words[Math.floor(Math.random()*words.length)];
+                    if (pick && choices.indexOf(pick)===-1) choices.push(pick);
+                }
+                // fill to 4
+                while (choices.length < 4) choices.push('Option');
+                // shuffle
+                choices.sort(()=>Math.random()-0.5);
+                quiz.push({q: blank, a: answer, choices: choices});
+            }
+            return quiz;
+        }
+        function openFilePicker(accept) {
+            var input = document.getElementById('file-input');
+            if (accept && accept.length > 0) {
+                input.accept = accept;
+            } else {
+                input.accept = ''; // allow all
+            }
+            input.value = null; // reset
+            input.click();
+        }
+
+        function handleFiles(files) {
+            if (!files || files.length === 0) return;
+            for (var i = 0; i < files.length; i++) {
+                addFileCard(files[i]);
+            }
+            showToast('Added ' + files.length + ' file(s) to Recent Uploads');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        }
+
+        // Small toast notification
+        function showToast(msg) {
+            var t = document.createElement('div');
+            t.innerText = msg;
+            t.style.position = 'fixed';
+            t.style.left = '50%';
+            t.style.bottom = '30px';
+            t.style.transform = 'translateX(-50%)';
+            t.style.background = 'rgba(0,0,0,0.8)';
+            t.style.color = 'white';
+            t.style.padding = '10px 14px';
+            t.style.borderRadius = '10px';
+            t.style.zIndex = 9999;
+            t.style.fontSize = '13px';
+            document.body.appendChild(t);
+            setTimeout(function(){ t.remove(); }, 3500);
+        }
+
+        // removed demo-toast function — demo cards deleted
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            var k = 1024;
+            var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            var i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Show per-card menu (Remove action)
+        function showCardMenu(anchorEl, cardEl, objectUrl) {
+            // remove any existing menu
+            var existing = document.querySelector('.card-menu');
+            if (existing) existing.remove();
+
+            var rect = anchorEl.getBoundingClientRect();
+            var menu = document.createElement('div');
+            menu.className = 'card-menu';
+            menu.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+            menu.style.left = (rect.left + window.scrollX - 80) + 'px';
+
+            var btnRemove = document.createElement('button');
+            btnRemove.innerText = 'Remove from Recent Uploads';
+            btnRemove.onclick = function(e){
+                e.stopPropagation();
+                // remove card and revoke url
+                if (objectUrl) try { URL.revokeObjectURL(objectUrl); } catch(err){}
+                cardEl.remove();
+                menu.remove();
+            };
+            menu.appendChild(btnRemove);
+
+            // click outside to close
+            setTimeout(function(){
+                var closeFn = function(ev){
+                    if (!menu.contains(ev.target) && ev.target !== anchorEl) { menu.remove(); document.removeEventListener('click', closeFn); }
+                };
+                document.addEventListener('click', closeFn);
+            }, 10);
+
+            document.body.appendChild(menu);
+        }
+
+        function addFileCard(file) {
+            var container = document.getElementById('recent-uploads');
+            if (!container) return;
+
+            var url = URL.createObjectURL(file);
+
+            var card = document.createElement('div');
+            card.className = 'file-card';
+
+            var header = document.createElement('div');
+            header.className = 'file-header';
+            header.style.cursor = 'pointer';
+            header.onclick = function() { window.open(url, '_blank'); };
+
+            var icon = document.createElement('div');
+            icon.className = 'file-icon';
+            var lower = file.name.toLowerCase();
+            if (lower.endsWith('.pdf')) { icon.classList.add('pdf'); icon.innerText = 'PDF'; }
+            else if (lower.match(/\.(jpg|jpeg|png)$/)) { icon.classList.add('img'); icon.innerText = 'IMG'; }
+            else if (lower.match(/\.(ppt|pptx)$/)) { icon.innerText = 'PPT'; }
+            else if (lower.match(/\.(doc|docx)$/)) { icon.innerText = 'DOC'; }
+            else { icon.innerText = 'FILE'; }
+
+            var info = document.createElement('div');
+            info.className = 'file-info';
+            var h4 = document.createElement('h4');
+            h4.innerText = file.name;
+            var p = document.createElement('p');
+            p.innerText = formatBytes(file.size) + ' • Uploaded just now';
+            info.appendChild(h4);
+            info.appendChild(p);
+
+            var more = document.createElement('div');
+            more.style.color = 'var(--text-light)';
+            more.style.cursor = 'pointer';
+            more.innerText = '⋮';
+            more.onclick = function(e){ e.stopPropagation(); showCardMenu(more, card, url); };
+
+            header.appendChild(icon);
+            header.appendChild(info);
+            header.appendChild(more);
+
+            card.appendChild(header);
+
+            var actionsTitle = document.createElement('div');
+            actionsTitle.className = 'ai-actions-title';
+            actionsTitle.innerText = '✨ AI Actions';
+            card.appendChild(actionsTitle);
+
+            var actionsGrid = document.createElement('div');
+            actionsGrid.className = 'actions-grid';
+
+            // If PDF, provide Summarize / Quiz Me / Highlight (no Flashcards)
+            var lower = file.name.toLowerCase();
+            if (lower.endsWith('.pdf') || file.type === 'application/pdf') {
+                var sum = document.createElement('div');
+                sum.className = 'action-chip';
+                sum.innerText = '📝 Summarize';
+                sum.onclick = function(e){ e.stopPropagation();
+                    showToast('Extracting PDF...');
+                    extractTextFromPDFFile(file).then(function(text){
+                        var s = summarizeText(text,3) || 'No extractable text found.';
+                        showResultModal('Summary', '<p>'+s.replace(/\n/g,'<br>')+'</p>');
+                    }).catch(function(){ showToast('Failed to read PDF'); });
+                };
+                actionsGrid.appendChild(sum);
+
+                var quiz = document.createElement('div');
+                quiz.className = 'action-chip';
+                quiz.innerText = '❓ Quiz Me';
+                quiz.onclick = function(e){ e.stopPropagation();
+                    showToast('Generating quiz...');
+                    extractTextFromPDFFile(file).then(function(text){
+                        var q = generateQuizFromText(text,5);
+                        if (!q.length) { showResultModal('Quiz', '<p>Not enough text to generate quiz.</p>'); return; }
+                        var html = '';
+                        q.forEach(function(item, idx){
+                            html += '<div style="margin-bottom:10px"><strong>Q'+(idx+1)+':</strong> '+item.q+'<br/>';
+                            item.choices.forEach(function(c,ci){ html += '<div style="margin:6px 0; padding:8px; background:#f6f7fb; border-radius:8px;">'+String.fromCharCode(65+ci)+'. '+c+'</div>'; });
+                            html += '</div>';
+                        });
+                        showResultModal('Generated Quiz', html);
+                    }).catch(function(){ showToast('Failed to read PDF'); });
+                };
+                actionsGrid.appendChild(quiz);
+
+                var hl = document.createElement('div');
+                hl.className = 'action-chip';
+                hl.innerText = '🖍️ Highlight Key Points';
+                hl.onclick = function(e){ e.stopPropagation();
+                    showToast('Finding key points...');
+                    extractTextFromPDFFile(file).then(function(text){
+                        var points = highlightKeyPoints(text,5);
+                        if (!points.length) { showResultModal('Highlights', '<p>No highlightable text found.</p>'); return; }
+                        var html = '<ul>' + points.map(function(p){ return '<li style="margin-bottom:6px">'+p+'</li>'; }).join('') + '</ul>';
+                        showResultModal('Key Points', html);
+                    }).catch(function(){ showToast('Failed to read PDF'); });
+                };
+                actionsGrid.appendChild(hl);
+            } else {
+                var chips = [ ['📝 Summarize','Summarizing document...'], ['🗂️ Flashcards','Creating flashcards...'], ['❓ Quiz Me','Generating quiz...'], ['🖍️ Highlight Key Points','Highlighting key points...'] ];
+                chips.forEach(function(ch){
+                    var chip = document.createElement('div');
+                    chip.className = 'action-chip';
+                    chip.innerText = ch[0];
+                    chip.onclick = function(e){ e.stopPropagation(); showToast(ch[1]); };
+                    actionsGrid.appendChild(chip);
+                });
+            }
+
+            card.appendChild(actionsGrid);
+
+            // Insert at top
+            if (container.firstChild) container.insertBefore(card, container.firstChild);
+            else container.appendChild(card);
+        }
+    </script>
+</body>
+</html>
 </body>
 </html>
